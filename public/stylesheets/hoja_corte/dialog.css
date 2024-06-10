@@ -1,0 +1,51 @@
+.dialog {
+    background-color: white;
+    width: 400px; /* Ancho fijo */
+    height: auto; /* Altura ajustada automáticamente según el contenido */
+    display: flex;
+    justify-content: space-around;
+    flex-direction: column;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .5);
+    position: relative;
+}
+
+.dialog .dialog-title {
+    font-family: "Segoe UI", Arial, sans-serif;
+    position: absolute; /* Posicionamiento absoluto */
+    top: 0;
+    left: 0;
+    padding-left: 15px;
+    margin: 0;
+    font-size: small;
+}
+
+.dialog-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    align-items: left;
+    padding-top: 20px;
+    padding-left: 15px;
+}
+
+.dialog-text-content {
+    display: flex;
+    font-size: larger;
+    width: 100%;
+    max-width: 470px;
+    justify-content: flex-start; /* Alinea el contenido al inicio (izquierda) */
+    align-items: left; /* Centra verticalmente el contenido */
+    flex-direction: column;
+    box-sizing: border-box;
+    padding: 30px 0 10px;
+}
+
+.dialog-footer {
+    padding: 10px 0 15px 0;
+    width: 95%;
+    border-top: none; /* Eliminar línea gris */
+    display: flex;
+    justify-content: flex-end; /* Alinear los elementos al final */
+    align-items: center;
+}

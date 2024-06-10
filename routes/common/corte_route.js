@@ -4,6 +4,9 @@ const path = require('path');
 const moment = require('moment-timezone');
 const { Corte } = require(path.join(__dirname, '..', '..', 'controllers', 'schemas', 'corte_schema.js'));
 const { HTTP } = require(path.join(__dirname, '..', '..', '/config', 'config.js'))
+const { CorteObj } = require(path.join(__dirname, '..', '..', 'controllers', 'hoja_corte','corte.js'));
+const { getLatestRCC , getLatestPlusOneRCC, checkRCCinDB, leerArchivoJSON, escribirArchivoJSON, validarYActualizarCorteLocal} = require(path.join(__dirname, '..', '..', 'controllers', 'hoja_corte', 'utils.js'));
+const { createCorte , getCortes } = require(path.join(__dirname, '..', '..', 'controllers', 'hoja_corte','data_handler.js'));
 
 
 // GET Base
@@ -226,6 +229,40 @@ router.get('/accumulated-data', (req, res) => {
     } catch (error) {
         return res.status(HTTP.BAD_REQUEST).json({ error: 'Formato de fecha inválido. Utiliza el formato YYYY-MM-DD' });
     }
+});
+
+router.get('/rcc-validation', async (req, res) => {
+    try {
+        var rccToValidate = req.query.rcc;
+        var found = await checkRCCinDB(rccToValidate);
+        
+        if(found) { 
+            res.status(200).json( {found: true} );
+        } else { 
+            res.status(200).json( {found: false} );
+        }
+
+    } catch (error) {
+        console.log('Error al validar el último RCC:', error);
+        res.status(500).json({ error: 'Error al obtener los cortes' });
+    }
+});
+
+// POST Crear Corte
+router.post('/createCorte', async (req, res) => {
+    let nuevoCorte;
+    console.log(req.body)
+    if (typeof req.body === 'object') {
+        nuevoCorte = CorteObj.fromObject(req.body);
+    } else if (typeof req.body === 'string') {
+        nuevoCorte = CorteObj.fromJSON(req.body);
+    } else {
+        return res.status(400).send('Tipo de elemento no válido en req.body');
+    }
+  
+    createCorte(nuevoCorte);
+  
+    res.status(200).send('Corte creado!');
 });
 
 module.exports = router;

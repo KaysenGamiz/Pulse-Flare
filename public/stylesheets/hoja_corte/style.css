@@ -1,0 +1,165 @@
+body {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 1em;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    max-width: 800px;
+}
+
+.infoText {
+  font-size: 1.09em;
+}
+
+.fecha-hora {
+    display: flex;
+    justify-content: right;
+    max-width: 790px;
+}
+
+.billetes {
+    padding-left: 1.5%;
+}
+
+.monedaF {
+    font-size: large;
+}
+
+.conteoPesos {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.break {
+    flex-basis: 100%;
+    height: 0;
+}
+
+input {
+    border: 0;
+    outline: 0;
+    border-bottom: 2px solid #03a8f45e;
+    font-size: 1rem;
+    color: black;
+    width: 2.7rem;
+    text-align: center;
+}
+
+input.input-concepto {
+  text-align: justify;
+}
+
+.underline {
+    text-decoration: underline;
+}
+
+.fecha-hora ol {
+    display: grid;
+    grid-template-columns: auto;
+    grid-gap: 10px;
+}
+
+.total-container {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+  }
+  
+  .total-label {
+    font-weight: bold;
+    margin-right: 5px;
+  }
+  
+  .total-amount {
+    border-bottom: 2px solid #03a8f45e;
+    padding-bottom: 2px;
+  }
+
+#Totales {
+    color: red; /* Establece el color rojo para el texto fuera del span */
+}
+  
+#Totales span {
+    color: black; /* Establece el color negro para el texto dentro del span */
+}
+
+.RetiroEfectivo,
+.TarjetaCredito {
+  display: flex;
+  align-items: center;
+}
+
+.numero {
+  display: inline-block;
+  width: 25px;
+}
+
+.texto {
+  display: inline-block;
+}
+
+.input-container {
+  display: flex;
+  align-items: center;
+  margin-left: 5px;
+}
+
+.dolar {
+  margin-right: 5px;
+}
+
+.tooltip-container {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip-text {
+  visibility: hidden;
+  width: 200px;
+  background-color: #000;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -100px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip-container:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
+.container.billetes .conteoPesos ol .justify-right {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.justify-right {
+  min-width: 950px;
+}
+
+
+ol {
+  list-style-type:none;
+}
+
+.contenedor-input {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centrar los elementos horizontalmente */
+  text-align: center; /* Centrar el texto horizontalmente */
+}
+
+.logo img {
+  width: 400px; /* Establece el ancho deseado */
+  height: auto; /* Ajusta automáticamente la altura proporcionalmente */
+}

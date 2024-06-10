@@ -1,0 +1,15 @@
+@media print {
+    body {
+      font-family: 'Times New Roman', Times, serif;
+      font-size: 0.93em;
+    }
+  
+    .button-14, .imprimir, .add-input-button {
+      display: none; /* Oculta el botón de impresión en la versión impresa */
+    }
+
+    .input-texto-oculto{
+      color: transparent; /* Oculta el botón de impresión en la versión impresa */
+    }
+  }
+  

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hoja de Corte</title>
+    <link rel="stylesheet" href="/stylesheets/hoja_corte/style.css">
+    <link rel="stylesheet" href="/stylesheets/hoja_corte/button.css">
+    <link rel="stylesheet" href="/stylesheets/hoja_corte/print.css">
+    <link rel="stylesheet" href="/stylesheets/hoja_corte/modal.css">
+    <link rel="stylesheet" href="/stylesheets/hoja_corte/dialog.css">
+    <script src="/scripts/hoja_corte/data_variables.js"></script>
+    <script src="/scripts/hoja_corte/script.js"></script>
+    <script src="/scripts/hoja_corte/api.js"></script>
+    <script src="/scripts/hoja_corte/modal.js"></script>
+</head>
+<body>
+
+    <header style="min-width: 1050px;">
+        <div class="logo">
+            <img src="/images/hoja_corte/logoBotica.jpg" alt="">
+        </div>
+        <div>
+            <nav class="infoText">
+                <p class="nombre">Botica San Jose <br> Independencia <br> <span class="Corte" style="color:red">CORTE: <span class="idCorte" id="idCorte" style="color: black;"></span></span> 
+                <br> <br> Fecha: <span id="fecha"></span> <br> Hora: <span id="hora"></span>
+                <button class="button-14 imprimir" onclick="imprimir();">Imprimir</button>
+                </p> 
+            </nav>
+        </div>
+    </header>
+
+    <div class="container billetes">
+      <b class="monedaF">Moneda Fraccionaria</b>
+      <div class="conteoPesos">
+        <ol>
+          <li class="500 break">
+            <span style="display: inline-block; width: 90px;">1.- $500</span>
+            (<input placeholder="" type="text" name="fname1" autofocus oninput="validarNumeroInput(event); updateAmount(this, 1)" onkeydown="handleEnterKey(event)" class="input-navigation" />)
+            $ <span id="amount1" data-original-value="500">__________</span>
+          </li><br><br>
+          <li class="200">
+            <span style="display: inline-block; width: 90px;">2.- $200</span>
+            (<input placeholder="" type="text" name="fname2" autofocus oninput="validarNumeroInput(event); updateAmount(this, 2)" onkeydown="handleEnterKey(event)" class="input-navigation" />)
+            $ <span id="amount2" data-original-value="200">__________</span>
+          </li><br>
+          <li class="100">
+            <span style="display: inline-block; width: 90px;">3.- $100</span>
+            (<input placeholder="" type="text" name="fname3" autofocus oninput="validarNumeroInput(event); updateAmount(this, 3)" onkeydown="handleEnterKey(event)" class="input-navigation" />)
+            $ <span id="amount3" data-original-value="100">__________</span>
+          </li><br>
+          <li class="50">
+            <span style="display: inline-block; width: 90px;">4.- $50</span>
+            (<input placeholder="" type="text" name="fname4" autofocus oninput="validarNumeroInput(event); updateAmount(this, 4)" onkeydown="handleEnterKey(event)" class="input-navigation" />)
+            $ <span id="amount4" data-original-value="50">__________</span>
+          </li><br>
+          <li class="20">
+            <span style="display: inline-block; width: 90px;">5.- $20</span>
+            (<input placeholder="" type="text" name="fname5" autofocus oninput="validarNumeroInput(event); updateAmount(this, 5)" onkeydown="handleEnterKey(event)" class="input-navigation" />)
+            $ <span id="amount5" data-original-value="20">__________</span>
+          </li><br>
+          <li class="10">
+            <span style="display: inline-block; width: 90px;">6.- $10</span>
+            (<input placeholder="" type="text" name="fname6" autofocus oninput="validarNumeroInput(event); updateAmount(this, 6)" onkeydown="handleEnterKey(event)" class="input-navigation" />)
+            $ <span id="amount6" data-original-value="10">__________</span>
+          </li><br>
+          <li class="1">
+            <span style="display: inline-block; width: 90px;">7.- Monedas</span>
+            (<input placeholder="" type="text" name="fname7" autofocus oninput="validarNumeroInput(event); updateMonedas(this)" onkeydown="handleEnterKey(event)" class="input-navigation" />)
+            $ <span id="amount7" data-original-value="1">__________</span>
+          </li><br>
+          <li class="TotalMN" id="Totales">
+            TOTAL DE M.N (suma total del 1 al 7): $ <span id="totalAmount">___________</span>
+          </li><br>
+          <li class="Dolares">
+            <span style="display: inline-block; width: 90px;">8.- Dolares</span>
+            <input placeholder="TC" type="text" name="fname8" autofocus oninput="validarNumeroInput(event); updateDolares()" onkeydown="handleEnterKey(event)" class="input-navigation" />
+            × 
+            <input placeholder="" type="text" name="fname9" autofocus oninput="validarNumeroInput(event); updateDolares()" onkeydown="handleEnterKey(event)" class="input-navigation" />
+            $
+            <span id="amount8" data-original-value="1">__________</span>
+          </li><br>              
+          <li class="RetiroEfectivo">
+            <span class="numero">9.-</span>
+            <div class="texto">
+              <span>Retiro En Efectivo (<span style="color: red;">Retiros realizados en el sistema</span>)</span>
+            </div>
+            <div class="input-container">
+              <span class="dolar">$</span>
+              <input placeholder="" type="text" name="fname10" style="width: 90px;" autofocus oninput="validarNumeroInput(event); retiroEnEfectivo = parseFloat(this.value);" onkeydown="handleEnterKey(event)" class="input-navigation" />
+            </div>
+          </li><br>
+          <li class="TarjetaCredito">
+            <span class="numero">10.-</span>
+            <div class="texto">
+              <span>Tarjeta De Credito (<span style="color: red;">Suma total de vouchers</span>)</span>
+            </div>
+            <div class="input-container">
+              <span class="dolar">$</span>
+              <input placeholder="" type="text" name="fname11" style="width: 90px;" autofocus oninput="validarNumeroInput(event); tarjeta = parseFloat(this.value);" onkeydown="handleEnterKey(event);" class="input-navigation" />
+            </div>
+          </li><br>
+          <li class="ComprasEfectivo">
+            <span class="numero">11.-</span>
+            <div class="texto">
+              <span>Compras en Efectivo</span> <span class="add-input-button"> <input type="number" class="numeric-input" value="1" min="1"/> <button class="button-14" onclick="addInput('ComprasEfectivo', 0);">+</button> <button class="button-14" onclick="removeInput('ComprasEfectivo');">-</button></span>
+            </div>
+            <div class="input-container">
+              <input placeholder="" type="text" name="fname12" style="width: 190px;" autofocus onkeydown="handleEnterKey(event)" class="input-navigation input-concepto" />
+              <span class="dolar">$</span>
+              <input placeholder="" type="text" name="fname13" style="width: 90px;" autofocus oninput="validarNumeroInput(event);" onkeydown="handleEnterKey(event)" class="input-navigation" />
+            </div>
+            <div class="input-container">
+              <input placeholder="" type="text" name="fname14" style="width: 190px;" autofocus onkeydown="handleEnterKey(event)" class="input-navigation input-concepto" />
+              <span class="dolar">$</span>
+              <input placeholder="" type="text" name="fname15" style="width: 90px;" autofocus oninput="validarNumeroInput(event);" onkeydown="handleEnterKey(event)" class="input-navigation" />
+            </div>
+            <div class="input-container">
+              <input placeholder="" type="text" name="fname16" style="width: 190px;" autofocus onkeydown="handleEnterKey(event)" class="input-navigation input-concepto" />
+              <span class="dolar">$</span>
+              <input placeholder="" type="text" name="fname17" style="width: 90px;" autofocus oninput="validarNumeroInput(event);" onkeydown="handleEnterKey(event)" class="input-navigation" />
+            </div>
+          </li><br>
+          <li class="TotalCompras" id="Totales">
+            TOTAL DE COMPRAS EN EFECTIVO: $ <span id="totalAmountCompras">___________</span>
+          </li><br>
+          <li class="GastosEfectivo">
+            <span class="numero">12.-</span>
+            <div class="texto">
+              <span>Gastos en Efectivo</span> <span class="add-input-button"> <input type="number" class="numeric-input" value="1" min="1"/> <button class="button-14" onclick="addInput('GastosEfectivo', 1);">+</button> <button class="button-14" onclick="removeInput('GastosEfectivo');">-</button></span>
+            </div>
+            <div class="input-container">
+              <input placeholder="" type="text" name="fname18" style="width: 190px;" autofocus onkeydown="handleEnterKey(event)" class="input-navigation input-concepto" />
+              <span class="dolar">$</span>
+              <input placeholder="" type="text" name="fname19" style="width: 90px;" autofocus oninput="validarNumeroInput(event);" onkeydown="handleEnterKey(event)" class="input-navigation" />
+            </div>
+            <div class="input-container">
+              <input placeholder="" type="text" name="fname20" style="width: 190px;" autofocus onkeydown="handleEnterKey(event)" class="input-navigation input-concepto" />
+              <span class="dolar">$</span>
+              <input placeholder="" type="text" name="fname21" style="width: 90px;" autofocus oninput="validarNumeroInput(event);" onkeydown="handleEnterKey(event)" class="input-navigation" />
+            </div>
+            <div class="input-container">
+              <input placeholder="" type="text" name="fname22" style="width: 190px;" autofocus onkeydown="handleEnterKey(event)" class="input-navigation input-concepto" />
+              <span class="dolar">$</span>
+              <input placeholder="" type="text" name="fname23" style="width: 90px;" autofocus oninput="validarNumeroInput(event);" onkeydown="handleEnterKey(event)" class="input-navigation" />
+            </div>
+          </li><br>
+          <li class="TotalGastos" id="Totales">
+            TOTAL DE GASTOS EN EFECTIVO: $ <span id="totalAmountGastos">___________</span>
+          </li><br>
+          <li class="Vales">
+            <span class="numero">13.-</span>
+            <div class="texto">
+              <span>Vales</span> <span class="add-input-button"> <input type="number" class="numeric-input" value="1" min="1"/> <button class="button-14" onclick="addInput('Vales', 2);">+</button> <button class="button-14" onclick="removeInput('Vales');">-</button></span>
+            </div>
+            <div class="input-container">
+              <input placeholder="" type="text" name="fname24" style="width: 190px;" autofocus onkeydown="handleEnterKey(event)" class="input-navigation input-concepto" />
+              <span class="dolar">$</span>
+              <input placeholder="" type="text" name="fname25" style="width: 90px;" autofocus oninput="validarNumeroInput(event);" onkeydown="handleEnterKey(event)" class="input-navigation" />
+            </div>
+            <div class="input-container">
+              <input placeholder="" type="text" name="fname26" style="width: 190px;" autofocus onkeydown="handleEnterKey(event)" class="input-navigation input-concepto" />
+              <span class="dolar">$</span>
+              <input placeholder="" type="text" name="fname27" style="width: 90px;" autofocus oninput="validarNumeroInput(event);" onkeydown="handleEnterKey(event)" class="input-navigation" />
+            </div>
+            <div class="input-container">
+              <input placeholder="" type="text" name="fname28" style="width: 190px;" autofocus onkeydown="handleEnterKey(event)" class="input-navigation input-concepto" />
+              <span class="dolar">$</span>
+              <input placeholder="" type="text" name="fname29" style="width: 90px;" autofocus oninput="validarNumeroInput(event);" onkeydown="handleEnterKey(event)" class="input-navigation" />
+            </div>
+            <div class="input-container">
+              <input placeholder="" type="text" name="fname30" style="width: 190px;" autofocus onkeydown="handleEnterKey(event)" class="input-navigation input-concepto" />
+              <span class="dolar">$</span>
+              <input placeholder="" type="text" name="fname31" style="width: 90px;" autofocus oninput="validarNumeroInput(event);" onkeydown="handleEnterKey(event)" class="input-navigation" />
+            </div>
+            <div class="input-container">
+              <input placeholder="" type="text" name="fname32" style="width: 190px;" autofocus onkeydown="handleEnterKey(event)" class="input-navigation input-concepto" />
+              <span class="dolar">$</span>
+              <input placeholder="" type="text" name="fname33" style="width: 90px;" autofocus oninput="validarNumeroInput(event);" onkeydown="handleEnterKey(event)" class="input-navigation" />
+            </div>
+          </li><br>
+          <li class="TotalVales" id="Totales">
+            TOTAL DE VALES DE EMPLEADOS: $ <span id="totalAmountVales">___________</span>
+          </li><br>
+          <li class="Devoluciones">
+            <span class="numero">14.-</span>
+            <div class="texto">
+              <span class="tooltip-container">
+                <span class="tooltip-trigger">Devoluciones</span>
+                <span class="tooltip-text">(En caso de no realizarse en el sistema, se restará del total de cinta de auditoria)</span>
+              </span>
+              <span class="add-input-button"> <input type="number" class="numeric-input" value="1" min="1"/> <button class="button-14" onclick="addInput('Devoluciones', 3);">+</button> <button class="button-14" onclick="removeInput('Devoluciones');">-</button> </span>
+            </div>
+            <div class="input-container">
+              <input placeholder="" type="text" name="fname34" style="width: 190px;" autofocus onkeydown="handleEnterKey(event)" class="input-navigation input-concepto" />
+              <span class="dolar">$</span>
+              <input placeholder="" type="text" name="fname35" style="width: 90px;" autofocus oninput="validarNumeroInput(event);" onkeydown="handleEnterKey(event)" class="input-navigation" />
+            </div>
+            <div class="input-container">
+              <input placeholder="" type="text" name="fname36" style="width: 190px;" autofocus onkeydown="handleEnterKey(event)" class="input-navigation input-concepto" />
+              <span class="dolar">$</span>
+              <input placeholder="" type="text" name="fname37" style="width: 90px;" autofocus oninput="validarNumeroInput(event);" onkeydown="handleEnterKey(event)" class="input-navigation" />
+            </div>            
+          </li><br>          
+          <li class="TotalDevoluciones" id="Totales">
+            TOTAL DEVOLUCIONES: $ <span id="totalAmountDevoluciones">___________</span>
+          </li><br>
+          <li class="SumaTotal justify-right">
+            GRAN SUMA TOTAL (SUMA DEL 1 AL 14) $ <span class="TotalFinal" style="padding-left: 5px;">_____________</span>
+          </li><br><br>
+          <li class="TotalSistema justify-right">
+            TOTAL DE CINTA DE AUDITORIA $ <span class="TotalSistema"><input placeholder="" type="text" name="fname38" style="width: 101px;" autofocus oninput="validarNumeroInput(event); totalSistema = this.value;" onkeydown="handleEnterKey(event); calcularDiferencia();" class="input-navigation" /></span>
+          </li><br>          
+          <li class="Sobrante justify-right" >
+            SOBRANTE: <span class="SobrantePlace" style="min-width: 88px; display: flex; justify-content: center;">___________</span>
+          </li><br>
+          <li class="Faltante justify-right" >
+            FALTANTE: <span class="FaltantePlace" style="min-width: 88px; display: flex; justify-content: center;">___________</span>
+          </li><br>
+          <li style="width: 800px; display: flex; justify-content: space-between;">
+            <div class="contenedor-input">
+              <input placeholder="RECIBIÓ" type="text" style="width: 300px;" oninput="actualizarTexto(this)" class="input-navigation input-texto-oculto" onkeydown="handleEnterKey(event)" />
+              RECIBIÓ:<span id="textoRecibido"></span>
+            </div>
+            <div class="contenedor-input">
+              <input placeholder="CAJERO(A)" type="text" style="width: 300px;" oninput="actualizarTexto(this)" class="input-navigation input-texto-oculto" onkeydown="handleEnterKey(event)" />
+              CAJERO(A):<span id="textoCajero"></span>
+            </div>
+          </li>
+        </ol>
+
+      </div>
+    </div>
+      
+    <div class="modal-bg" id="modal-bg">
+      <div class="modal">
+        <div class="modal-header">
+          <h2>Escribe el RCC del corte:</h2>
+        </div>
+        <div class="modal-content">
+          <label for="name">RCC: </label>
+          <input class="input-rcc" type="text">
+        </div>
+        <div class="modal-footer">
+          <button class="button-14 modal-send">OK</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="/scripts/hoja_corte/dialog.js"></script>
+
+</body>
+</html>

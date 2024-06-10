@@ -7,7 +7,7 @@ const { HTTP } = require(path.join(__dirname, '..', '..', '/config', 'config.js'
 
 // GET Base
 router.get('/', (req, res) => {
-    res.status(HTTP.OK).send('Página de Hoja de Corte');
+    res.status(HTTP.OK).sendFile(path.join(__dirname, '..', '..', 'views', 'hoja_corte', 'home.html'));
   });
   
   // GET Details

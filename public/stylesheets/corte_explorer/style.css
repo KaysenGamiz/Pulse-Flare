@@ -1,0 +1,12 @@
+.accordion-button {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    text-align: left;
+}
+
+.accordion-button span {
+    flex: 1;
+    margin-right: 10px;
+}

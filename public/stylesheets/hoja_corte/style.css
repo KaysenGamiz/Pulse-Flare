@@ -47,6 +47,17 @@ input {
     text-align: center;
 }
 
+select {
+  border:0px;
+  border-bottom: 2px solid #03a8f45e;
+  appearance: none;
+  background: url('data:image/svg+xml;utf8,<svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 9l-7 7-7-7"></path></svg>') no-repeat right 10px center;
+}
+
+select:hover {
+  box-shadow: 0 0 8px 2px #03a8f45e;
+}
+
 input.input-concepto {
   text-align: justify;
 }

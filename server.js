@@ -1,9 +1,12 @@
 const express = require('express')
+const session = require('express-session');
 const path = require('path');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const router = require(path.join(__dirname, 'controllers', 'router.js'))
 const config = require(path.join(__dirname, 'config', 'config.js'));
+const login_router = require(path.join(__dirname, 'controllers', 'login.js'))
+const authMiddleware = require(path.join(__dirname, 'controllers', 'middlewares.js'))
 
 // Mongo DB
 
@@ -26,9 +29,21 @@ connect();
 const server = express();
 server.use(express.json());
 server.use(cors());
+server.use(session({
+  secret: process.env.secret, // Cambia esto a una clave secreta segura
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false } // Cambia a true si usas HTTPS
+}));
 const PORT = process.env.PORT || 3029;
 
 server.use(express.static(path.join(__dirname, '/public')));
+
+// Ruta de login sin autenticación
+server.use('/login', login_router);
+
+// Middleware de autenticación
+server.use(authMiddleware);
 
 server.use('/', router);
 

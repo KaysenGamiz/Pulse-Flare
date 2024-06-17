@@ -220,11 +220,15 @@
           </li><br>
           <li style="width: 800px; display: flex; justify-content: space-between;">
             <div class="contenedor-input">
-              <input placeholder="RECIBIÓ" type="text" style="width: 300px;" oninput="actualizarTexto(this)" class="input-navigation input-texto-oculto" onkeydown="handleEnterKey(event)" />
+              <select id="selectRecibio" style="width: 300px;" class="input-navigation input-texto-oculto">
+                <option value="" disabled selected>Selecciona una opción</option>
+              </select>
               RECIBIÓ:<span id="textoRecibido"></span>
             </div>
             <div class="contenedor-input">
-              <input placeholder="CAJERO(A)" type="text" style="width: 300px;" oninput="actualizarTexto(this)" class="input-navigation input-texto-oculto" onkeydown="handleEnterKey(event)" />
+              <select id="selectCajero" style="width: 300px;" class="input-navigation input-texto-oculto">
+                <option value="" disabled selected>Selecciona una opción</option>
+              </select>
               CAJERO(A):<span id="textoCajero"></span>
             </div>
           </li>
@@ -249,6 +253,7 @@
     </div>
 
     <script src="/scripts/hoja_corte/dialog.js"></script>
+    <script src="/scripts/hoja_corte/input_list.js"></script>
 
 </body>
 </html>

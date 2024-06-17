@@ -11,5 +11,15 @@
     .input-texto-oculto{
       color: transparent; /* Oculta el botón de impresión en la versión impresa */
     }
+
+    select {
+      border:0px;
+      outline:0px;
+      border-bottom: 2px solid #03a8f45e;
+      background:none;
+      -webkit-appearance:none;
+      appearance:none;
+    }
+    
   }
   

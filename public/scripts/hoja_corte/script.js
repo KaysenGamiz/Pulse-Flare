@@ -469,12 +469,12 @@ function calcularDiferencia() {
   return diferenciaFinal
 }
 
-function actualizarTexto(input) {
-  var texto = input.value;
-  var contenedor = input.parentElement; // Obtener el contenedor padre del campo de entrada
+function actualizarTexto(select) {
+  var texto = select.value;
+  var contenedor = select.parentElement; // Obtener el contenedor padre del campo de entrada
   var spanTexto = contenedor.querySelector("span"); // Buscar el elemento span dentro del contenedor
   spanTexto.textContent = texto;
-  if(spanTexto.id == 'textoRecibido'){
+  if(spanTexto.id === 'textoRecibido') {
     recibido = texto;
   } else {
     cajero = texto;

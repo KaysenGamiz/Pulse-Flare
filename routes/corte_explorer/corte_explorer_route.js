@@ -15,4 +15,22 @@ router.get('/', (req, res) => {
     res.status(HTTP.OK).send('Detalle de Corte Explorer');
   });
 
+// GET Reimprimir Corte
+router.get('/reimprimir/:rcc', async (req, res) => {
+  const { rcc } = req.params;
+
+  try {
+      const corte = await Corte.findOne({ RCC: rcc });
+      if (!corte) {
+          return res.status(HTTP.BAD_REQUEST).send('Corte no encontrado.');
+      }
+
+      // Renderizar la plantilla EJS con los datos del corte
+      res.render('hoja_corte/hoja_corte', { corte });
+  } catch (error) {
+      console.error(error);
+      res.status(HTTP.INTERNAL_SERVER_ERROR).send('Error al cargar el corte para impresión.');
+  }
+});
+
 module.exports = router;

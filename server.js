@@ -39,6 +39,9 @@ const PORT = process.env.PORT || 3029;
 
 server.use(express.static(path.join(__dirname, '/public')));
 
+server.set('view engine', 'ejs');
+server.set('views', path.join(__dirname, 'views'));
+
 // Ruta de login sin autenticación
 server.use('/login', login_router);
 

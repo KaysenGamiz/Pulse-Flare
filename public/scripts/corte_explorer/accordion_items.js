@@ -282,13 +282,16 @@ function insertAccordionItemIntoContainer(accordionItem, data) {
 
     // Creamos el botón Imprimir separado, fuera del acordeón
     const printButton = document.createElement('button');
-    printButton.classList.add('btn', 'btn-primary', 'ms-3');
+    printButton.classList.add('btn', 'btn-success', 'ms-3');
     printButton.textContent = 'Imprimir';
 
     // Agregamos un listener para que imprima la información del accordion asociado
     printButton.addEventListener('click', () => {
-        console.log('Información asociada al botón:', data);
+        const rcc = data.RCC; // Obtener RCC del JSON asociado
+        console.log(rcc)
+        window.open(`/corte_explorer/reimprimir/${rcc}`, '_blank'); // Abre la hoja de corte en una nueva pestaña
     });
+    
 
     // Añadimos el botón a la derecha
     row.appendChild(printButton);

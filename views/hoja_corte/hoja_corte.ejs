@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hoja de Corte</title>
+    <link rel="stylesheet" href="/stylesheets/hoja_corte/style.css">
+    <link rel="stylesheet" href="/stylesheets/hoja_corte/button.css">
+    <link rel="stylesheet" href="/stylesheets/hoja_corte/print.css">
+    <link rel="stylesheet" href="/stylesheets/hoja_corte/modal.css">
+    <link rel="stylesheet" href="/stylesheets/hoja_corte/dialog.css">
+    <script src="/scripts/hoja_corte/data_variables.js"></script>
+    <script src="/scripts/hoja_corte/script.js"></script>
+    <script src="/scripts/hoja_corte/api.js"></script>
+    <script src="/scripts/hoja_corte/modal.js"></script>
+</head>
+<body>
+
+    <header style="min-width: 1050px;">
+        <div class="logo">
+            <img src="/images/hoja_corte/logoBotica.jpg" alt="">
+        </div>
+        <div>
+            <nav class="infoText">
+                <p class="nombre">Botica San Jose <br> Independencia <br> 
+                <span class="Corte" style="color:red">CORTE: <span class="idCorte" id="idCorte" style="color: black;"><%= corte.RCC %></span></span> 
+                <br> <br> Fecha: <span id="fecha"><%= corte.fecha %></span> <br> Hora: <span id="hora"><%= corte.hora %></span>
+                <button class="button-14 imprimir" onclick="window.print();">Imprimir</button>
+                </p> 
+            </nav>
+        </div>
+    </header>
+
+    <div class="container billetes">
+      <b class="monedaF">Moneda Fraccionaria</b>
+      <div class="conteoPesos">
+        <ol>
+          <li class="500 break">
+            <span style="display: inline-block; width: 90px;">1.- $500</span>
+            (<input placeholder="" type="text" name="fname1" value="<%= corte.efectivo["500"] %>" readonly class="input-navigation" style="width:50px;" />)
+            $ <span id="amount1"><%= corte.efectivo["500"] * 500 %></span>
+          </li><br><br>
+          <li class="200">
+            <span style="display: inline-block; width: 90px;">2.- $200</span>
+            (<input placeholder="" type="text" name="fname2" value="<%= corte.efectivo["200"] %>" readonly class="input-navigation" style="width:50px;" />)
+            $ <span id="amount2"><%= corte.efectivo["200"] * 200 %></span>
+          </li><br>
+          <li class="100">
+            <span style="display: inline-block; width: 90px;">3.- $100</span>
+            (<input placeholder="" type="text" name="fname3" value="<%= corte.efectivo["100"] %>" readonly class="input-navigation" style="width:50px;" />)
+            $ <span id="amount3"><%= corte.efectivo["100"] * 100 %></span>
+          </li><br>
+          <li class="50">
+            <span style="display: inline-block; width: 90px;">4.- $50</span>
+            (<input placeholder="" type="text" name="fname4" value="<%= corte.efectivo["50"] %>" readonly class="input-navigation" style="width:50px;" />)
+            $ <span id="amount4"><%= corte.efectivo["50"] * 50 %></span>
+          </li><br>
+          <li class="20">
+            <span style="display: inline-block; width: 90px;">5.- $20</span>
+            (<input placeholder="" type="text" name="fname5" value="<%= corte.efectivo["20"] %>" readonly class="input-navigation" style="width:50px;" />)
+            $ <span id="amount5"><%= corte.efectivo["20"] * 20 %></span>
+          </li><br>
+          <li class="10">
+            <span style="display: inline-block; width: 90px;">6.- $10</span>
+            (<input placeholder="" type="text" name="fname6" value="<%= corte.efectivo["10"] %>" readonly class="input-navigation" style="width:50px;" />)
+            $ <span id="amount6"><%= corte.efectivo["10"] * 10 %></span>
+          </li><br>
+          <li class="1">
+            <span style="display: inline-block; width: 90px;">7.- Monedas</span>
+            (<input placeholder="" type="text" name="fname7" value="<%= corte.efectivo.monedas %>" readonly class="input-navigation" style="width:50px;" />)
+            $ <span id="amount7"><%= corte.efectivo.monedas %></span>
+          </li><br>
+          <li class="TotalMN" id="Totales">
+            TOTAL DE M.N (suma total del 1 al 7): $ <span id="totalAmount"><%= corte.totalEfectivo %></span>
+          </li><br>
+          <li class="Dolares">
+            <span style="display: inline-block; width: 90px;">8.- Dolares</span>
+            <input placeholder="TC" type="text" name="fname8" value="<%= corte.dolares.TC %>" readonly class="input-navigation" style="width:50px;" />
+            × 
+            <input placeholder="" type="text" name="fname9" value="<%= corte.dolares.efectivo %>" readonly class="input-navigation" style="width:50px;" />
+            $
+            <span id="amount8"><%= (corte.dolares.TC * corte.dolares.efectivo).toFixed(2) %></span>
+          </li><br>              
+          <li class="RetiroEfectivo">
+            <span class="numero">9.-</span>
+            <div class="texto">
+              <span>Retiro En Efectivo (<span style="color: red;">Retiros realizados en el sistema</span>)</span>
+            </div>
+            <div class="input-container">
+              <span class="dolar">$</span>
+              <input placeholder="" type="text" name="fname10" value="<%= corte.retiroEnEfectivo %>" readonly class="input-navigation" style="width:100px;" />
+            </div>
+          </li><br>
+          <li class="TarjetaCredito">
+            <span class="numero">10.-</span>
+            <div class="texto">
+              <span>Tarjeta De Credito (<span style="color: red;">Suma total de vouchers</span>)</span>
+            </div>
+            <div class="input-container">
+              <span class="dolar">$</span>
+              <input placeholder="" type="text" name="fname11" value="<%= corte.tarjeta %>" readonly class="input-navigation" style="width:100px;" />
+            </div>
+          </li><br>
+
+          <% 
+            // Compras en efectivo: 3 slots por defecto
+            const comprasEntries = Object.entries(corte.comprasEfectivo).filter(([c,m]) => c !== "EMPTY" && m !== 0);
+            const comprasDefaultCount = 3;
+          %>
+          <li class="ComprasEfectivo">
+            <span class="numero">11.-</span>
+            <div class="texto">
+              <span>Compras en Efectivo</span> <span class="add-input-button"> <input type="number" class="numeric-input" value="1" min="1" readonly/> <button class="button-14" disabled>+</button> <button class="button-14" disabled>-</button></span>
+            </div>
+            <% comprasEntries.forEach(([concepto, monto]) => { %>
+            <div class="input-container">
+              <input placeholder="" type="text" name="comprasConcepto" value="<%= concepto %>" readonly class="input-navigation input-concepto" style="width:190px;" />
+              <span class="dolar">$</span>
+              <input placeholder="" type="text" name="comprasMonto" value="<%= monto %>" readonly class="input-navigation" style="width:100px;" />
+            </div>
+            <% }); %>
+            <% if (comprasEntries.length < comprasDefaultCount) { 
+                 for (let i = 0; i < (comprasDefaultCount - comprasEntries.length); i++) { %>
+            <div class="input-container">
+              <input placeholder="" type="text" name="comprasConcepto" value="" readonly class="input-navigation input-concepto" style="width:190px;" />
+              <span class="dolar">$</span>
+              <input placeholder="" type="text" name="comprasMonto" value="" readonly class="input-navigation" style="width:100px;" />
+            </div>
+            <% } } %>
+          </li><br>
+          <li class="TotalCompras" id="Totales">
+            TOTAL DE COMPRAS EN EFECTIVO: $ <span id="totalAmountCompras">
+              <% 
+                let totalCompras = 0; 
+                for (const [c,m] of Object.entries(corte.comprasEfectivo)) { 
+                  if(c !== "EMPTY" && m !== 0) totalCompras += m; 
+                } 
+              %>
+              <%= totalCompras %>
+            </span>
+          </li><br>
+
+          <% 
+            // Gastos en efectivo: 3 slots por defecto
+            const gastosEntries = Object.entries(corte.gastosEfectivo).filter(([c,m]) => c !== "EMPTY" && m !== 0);
+            const gastosDefaultCount = 3;
+          %>
+          <li class="GastosEfectivo">
+            <span class="numero">12.-</span>
+            <div class="texto">
+              <span>Gastos en Efectivo</span> <span class="add-input-button"> <input type="number" class="numeric-input" value="1" min="1" readonly/> <button class="button-14" disabled>+</button> <button class="button-14" disabled>-</button></span>
+            </div>
+            <% gastosEntries.forEach(([concepto, monto]) => { %>
+            <div class="input-container">
+              <input placeholder="" type="text" name="gastosConcepto" value="<%= concepto %>" readonly class="input-navigation input-concepto" style="width:190px;" />
+              <span class="dolar">$</span>
+              <input placeholder="" type="text" name="gastosMonto" value="<%= monto %>" readonly class="input-navigation" style="width:100px;" />
+            </div>
+            <% }); %>
+            <% if (gastosEntries.length < gastosDefaultCount) { 
+                 for (let i = 0; i < (gastosDefaultCount - gastosEntries.length); i++) { %>
+            <div class="input-container">
+              <input placeholder="" type="text" name="gastosConcepto" value="" readonly class="input-navigation input-concepto" style="width:190px;" />
+              <span class="dolar">$</span>
+              <input placeholder="" type="text" name="gastosMonto" value="" readonly class="input-navigation" style="width:100px;" />
+            </div>
+            <% } } %>
+          </li><br>
+          <li class="TotalGastos" id="Totales">
+            TOTAL DE GASTOS EN EFECTIVO: $ <span id="totalAmountGastos">
+              <% 
+                let totalGastos = 0; 
+                for (const [c,m] of Object.entries(corte.gastosEfectivo)) { 
+                  if(c !== "EMPTY" && m !== 0) totalGastos += m; 
+                } 
+              %>
+              <%= totalGastos %>
+            </span>
+          </li><br>
+
+          <% 
+            // Vales: 5 slots por defecto
+            const valesEntries = Object.entries(corte.vales).filter(([c,m]) => c !== "EMPTY" && m !== 0);
+            const valesDefaultCount = 5;
+          %>
+          <li class="Vales">
+            <span class="numero">13.-</span>
+            <div class="texto">
+              <span>Vales</span> <span class="add-input-button"> <input type="number" class="numeric-input" value="1" min="1" readonly/> <button class="button-14" disabled>+</button> <button class="button-14" disabled>-</button></span>
+            </div>
+            <% valesEntries.forEach(([concepto, monto]) => { %>
+            <div class="input-container">
+              <input placeholder="" type="text" name="valesConcepto" value="<%= concepto %>" readonly class="input-navigation input-concepto" style="width:190px;" />
+              <span class="dolar">$</span>
+              <input placeholder="" type="text" name="valesMonto" value="<%= monto %>" readonly class="input-navigation" style="width:100px;" />
+            </div>
+            <% }); %>
+            <% if (valesEntries.length < valesDefaultCount) { 
+                 for (let i = 0; i < (valesDefaultCount - valesEntries.length); i++) { %>
+            <div class="input-container">
+              <input placeholder="" type="text" name="valesConcepto" value="" readonly class="input-navigation input-concepto" style="width:190px;" />
+              <span class="dolar">$</span>
+              <input placeholder="" type="text" name="valesMonto" value="" readonly class="input-navigation" style="width:100px;" />
+            </div>
+            <% } } %>
+          </li><br>
+          <li class="TotalVales" id="Totales">
+            TOTAL DE VALES DE EMPLEADOS: $ <span id="totalAmountVales">
+              <% 
+                let totalVales = 0; 
+                for (const [c,m] of Object.entries(corte.vales)) { 
+                  if(c !== "EMPTY" && m !== 0) totalVales += m; 
+                } 
+              %>
+              <%= totalVales %>
+            </span>
+          </li><br>
+
+          <% 
+            // Devoluciones: 2 slots por defecto
+            const devEntries = Object.entries(corte.devoluciones).filter(([c,m]) => c !== "EMPTY" && m !== 0);
+            const devDefaultCount = 2;
+          %>
+          <li class="Devoluciones">
+            <span class="numero">14.-</span>
+            <div class="texto">
+              <span class="tooltip-container">
+                <span class="tooltip-trigger">Devoluciones</span>
+                <span class="tooltip-text">(En caso de no realizarse en el sistema, se restará del total de cinta de auditoria)</span>
+              </span>
+              <span class="add-input-button"> <input type="number" class="numeric-input" value="1" min="1" readonly/> <button class="button-14" disabled>+</button> <button class="button-14" disabled>-</button> </span>
+            </div>
+            <% devEntries.forEach(([concepto, monto]) => { %>
+            <div class="input-container">
+              <input placeholder="" type="text" name="devConcepto" value="<%= concepto %>" readonly class="input-navigation input-concepto" style="width:190px;"/>
+              <span class="dolar">$</span>
+              <input placeholder="" type="text" name="devMonto" value="<%= monto %>" readonly class="input-navigation" style="width:100px;"/>
+            </div>
+            <% }); %>
+            <% if (devEntries.length < devDefaultCount) { 
+                 for (let i = 0; i < (devDefaultCount - devEntries.length); i++) { %>
+            <div class="input-container">
+              <input placeholder="" type="text" name="devConcepto" value="" readonly class="input-navigation input-concepto" style="width:190px;"/>
+              <span class="dolar">$</span>
+              <input placeholder="" type="text" name="devMonto" value="" readonly class="input-navigation" style="width:100px;"/>
+            </div>
+            <% } } %>
+          </li><br>          
+          <li class="TotalDevoluciones" id="Totales">
+            TOTAL DEVOLUCIONES: $ <span id="totalAmountDevoluciones">
+              <% 
+                let totalDevs = 0; 
+                for (const [c,m] of Object.entries(corte.devoluciones)) { 
+                  if(c !== "EMPTY" && m !== 0) totalDevs += m; 
+                } 
+              %>
+              <%= totalDevs %>
+            </span>
+          </li><br>
+          <li class="SumaTotal justify-right">
+            GRAN SUMA TOTAL (SUMA DEL 1 AL 14) $ <span class="TotalFinal" style="padding-left: 5px;"><%= corte.totalCorte %></span>
+          </li><br><br>
+          <li class="TotalSistema justify-right">
+            TOTAL DE CINTA DE AUDITORIA $ <span class="TotalSistema">
+              <input placeholder="" type="text" name="fname38" value="<%= corte.totalSistema %>" readonly class="input-navigation" style="width:100px;"/>
+            </span>
+          </li><br>          
+          <% 
+            let sobrante = corte.diferencia > 0 ? corte.diferencia : 0;
+            let faltante = corte.diferencia < 0 ? Math.abs(corte.diferencia) : 0;
+          %>
+          <li class="Sobrante justify-right" >
+            SOBRANTE: <span class="SobrantePlace" style="min-width: 88px; display: flex; justify-content: center;"><%= sobrante !== 0 ? sobrante.toFixed(2) : "___________" %></span>
+          </li><br>
+          <li class="Faltante justify-right" >
+            FALTANTE: <span class="FaltantePlace" style="min-width: 88px; display: flex; justify-content: center;"><%= faltante !== 0 ? faltante.toFixed(2) : "___________" %></span>
+          </li><br>
+          <li style="width: 800px; display: flex; justify-content: space-between;">
+            <div class="contenedor-input">
+              <select id="selectRecibio" style="width: 300px;" class="input-navigation input-texto-oculto" disabled>
+                <option value="<%= corte.recibido %>" selected><%= corte.recibido %></option>
+              </select>
+              RECIBIÓ:<span id="textoRecibido"><%= corte.recibido %></span>
+            </div>
+            <div class="contenedor-input">
+              <select id="selectCajero" style="width: 300px;" class="input-navigation input-texto-oculto" disabled>
+                <option value="<%= corte.cajero %>" selected><%= corte.cajero %></option>
+              </select>
+              CAJERO(A):<span id="textoCajero"><%= corte.cajero %></span>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </div>
+
+    <script src="/scripts/hoja_corte/input_list.js"></script>
+
+</body>
+</html>

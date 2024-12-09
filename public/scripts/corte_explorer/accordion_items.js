@@ -29,7 +29,6 @@ function createTable(data) {
     const trData = document.createElement('tr');
 
     const tdEfectivo = document.createElement('td');
-    // Populate Efectivo data using data.efectivo property
     tdEfectivo.innerHTML = `
         <div id="efectivo_500">500: <span id="valor_500">${data.efectivo['500']}</span></div>
         <div id="efectivo_200">200: <span id="valor_200">${data.efectivo['200']}</span></div>
@@ -42,18 +41,15 @@ function createTable(data) {
     `;
 
     const tdDolares = document.createElement('td');
-    // Populate Dolares data using data.dolares property
     tdDolares.innerHTML = `
         <div id="TC">TC: <span id="valor_tc">${data.dolares.TC}</span></div>
         <div id="efectivo_dolares">Efectivo: <span id="valor_efectivo_dolares">${data.dolares.efectivo}</span></div>
     `;
 
     const tdTarjeta = document.createElement('td');
-    // Populate Tarjeta data using data.tarjeta property
     tdTarjeta.textContent = `$${data.tarjeta}`;
 
     const tdRetiro = document.createElement('td');
-    // Populate Retiro data using data.retiroEnEfectivo property
     tdRetiro.textContent = `$${data.retiroEnEfectivo}`;
 
     trData.appendChild(tdEfectivo);
@@ -98,7 +94,6 @@ function createTableConceptos(data) {
     const trData = document.createElement('tr');
 
     const tdCompras = document.createElement('td');
-    // Populate Compras data using data.comprasEfectivo property
     for (const concepto in data.comprasEfectivo) {
         const divCompra = document.createElement('div');
         divCompra.id = `compra_${concepto}`;
@@ -107,7 +102,6 @@ function createTableConceptos(data) {
     }
 
     const tdGastos = document.createElement('td');
-    // Populate Gastos data using data.gastosEfectivo property
     for (const concepto in data.gastosEfectivo) {
         const divGasto = document.createElement('div');
         divGasto.id = `gasto_${concepto}`;
@@ -116,7 +110,6 @@ function createTableConceptos(data) {
     }
 
     const tdVales = document.createElement('td');
-    // Populate Vales data using data.vales property
     for (const concepto in data.vales) {
         const divVale = document.createElement('div');
         divVale.id = `vale_${concepto}`;
@@ -125,7 +118,6 @@ function createTableConceptos(data) {
     }
 
     const tdDevoluciones = document.createElement('td');
-    // Populate Devoluciones data using data.devoluciones property
     for (const concepto in data.devoluciones) {
         const divDevolucion = document.createElement('div');
         divDevolucion.id = `devolucion_${concepto}`;
@@ -197,6 +189,16 @@ function createTableTotales(data) {
     return table;
 }
 
+function turno_check(hora) {
+    const [hours] = hora.split(':').map(Number);
+    if (hours < 12) {
+        return 'Matutino';
+    } else if (hours < 18) {
+        return 'Vespertino';
+    } else {
+        return 'Nocturno';
+    }
+}
 
 function createAccordionItem(data) {
     const accordionItem = document.createElement('div');
@@ -234,6 +236,7 @@ function createAccordionItem(data) {
     button.appendChild(turnoSpan);
     button.appendChild(fechaSpan);
     button.appendChild(horaSpan);
+
     header.appendChild(button);
     accordionItem.appendChild(header);
 
@@ -244,9 +247,6 @@ function createAccordionItem(data) {
 
     const bodyDiv = document.createElement('div');
     bodyDiv.classList.add('accordion-body');
-
-    // Create the table structure and populate the rest of the content as needed
-    // ...
 
     const table = createTable(data);
     const tableConceptos = createTableConceptos(data);
@@ -259,10 +259,41 @@ function createAccordionItem(data) {
     collapseDiv.appendChild(bodyDiv);
     accordionItem.appendChild(collapseDiv);
 
-    return accordionItem;
+    // Insertar el accordion y el botón asociado
+    insertAccordionItemIntoContainer(accordionItem, data);
 }
 
-function insertAccordionItemIntoContainer(accordionItem) {
+
+function insertAccordionItemIntoContainer(accordionItem, data) {
     const accordionContainer = document.getElementById('accordionCortes');
-    accordionContainer.appendChild(accordionItem);
+
+    // Verifica que accordionItem sea un nodo válido
+    if (!(accordionItem instanceof HTMLElement)) {
+        console.error("El elemento accordionItem no es un nodo válido:", accordionItem);
+        return;
+    }
+
+    // Creamos un contenedor para el acordeón y el botón
+    const row = document.createElement('div');
+    row.classList.add('d-flex', 'align-items-center', 'mb-2');
+
+    // Añadimos el acordeón
+    row.appendChild(accordionItem);
+
+    // Creamos el botón Imprimir separado, fuera del acordeón
+    const printButton = document.createElement('button');
+    printButton.classList.add('btn', 'btn-primary', 'ms-3');
+    printButton.textContent = 'Imprimir';
+
+    // Agregamos un listener para que imprima la información del accordion asociado
+    printButton.addEventListener('click', () => {
+        console.log('Información asociada al botón:', data);
+    });
+
+    // Añadimos el botón a la derecha
+    row.appendChild(printButton);
+
+    // Finalmente añadimos este row al contenedor principal
+    accordionContainer.appendChild(row);
 }
+

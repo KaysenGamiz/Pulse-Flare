@@ -10,3 +10,17 @@
     flex: 1;
     margin-right: 10px;
 }
+
+.d-flex.align-items-center.mb-2 {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.accordion-item {
+    flex-grow: 1; /* Permite que el accordion ocupe todo el espacio restante */
+}
+
+button.btn {
+    flex-shrink: 0; /* Evita que el botón cambie de tamaño */
+}

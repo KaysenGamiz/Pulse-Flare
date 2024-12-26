@@ -231,6 +231,68 @@ router.get('/accumulated-data', (req, res) => {
     }
 });
 
+// GET Accumulated Data by Day for a Month
+router.get('/daily-accumulated', (req, res) => {
+    const { date } = req.query;
+
+    try {
+        if (!date) {
+            return res.status(HTTP.BAD_REQUEST).json({ error: 'El parámetro "date" es requerido en formato YYYY-MM-DD.' });
+        }
+
+        const fechaInicio = moment.tz(date, 'America/Los_Angeles').startOf('month').toDate();
+        const fechaFin = moment.tz(date, 'America/Los_Angeles').endOf('month').toDate();
+        
+        Corte.aggregate([
+            {
+                $match: {
+                    fechaHora: { $gte: fechaInicio, $lte: fechaFin } // Filtrar por el mes seleccionado
+                }
+            },
+            {
+                $group: {
+                    _id: { dayOfWeek: { $dayOfWeek: '$fechaHora' } }, // Agrupar por día de la semana
+                    totalSistemaSum: { $sum: '$totalSistema' } // Sumar los valores de totalSistema
+                }
+            },
+            {
+                $sort: { '_id.dayOfWeek': 1 } // Ordenar por día de la semana (Domingo = 1, Sábado = 7)
+            },
+            {
+                $project: {
+                    _id: 0,
+                    dayOfWeek: '$_id.dayOfWeek', // Índice del día de la semana
+                    totalSistemaSum: 1 // Mantener la suma
+                }
+            }
+        ])
+        .then((result) => {
+            // Ajustar el orden para que el primer día sea lunes
+            const dayNames = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+            const adjustedDayNames = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+
+            // Mapear y reorganizar los días
+            const formattedResult = result.map(item => {
+                const adjustedDayIndex = item.dayOfWeek === 1 ? 7 : item.dayOfWeek - 1; // Convertir Domingo (1) al final (7)
+                return {
+                    dayName: adjustedDayNames[adjustedDayIndex - 1],
+                    totalSistemaSum: item.totalSistemaSum
+                };
+            });
+
+            res.status(HTTP.OK).json(formattedResult);
+        })
+        .catch((error) => {
+            console.error(error);
+            res.status(HTTP.INTERNAL_SERVER_ERROR).json({ error: 'Error al obtener los datos acumulados por día de la semana' });
+        });
+    } catch (error) {
+        return res.status(HTTP.BAD_REQUEST).json({ error: 'Formato de fecha inválido. Utiliza el formato YYYY-MM-DD.' });
+    }
+});
+
+
+
 router.get('/rcc-validation', async (req, res) => {
     try {
         var rccToValidate = req.query.rcc;

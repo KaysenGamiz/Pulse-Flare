@@ -7,8 +7,8 @@ const { HTTP } = require(path.join(__dirname, '..', '..', '/config', 'config.js'
 
 // GET Base
 router.get('/', (req, res) => {
-    res.status(HTTP.OK).send('Página de Corte Analytics');
-  });
+  res.status(HTTP.OK).sendFile(path.join(__dirname, '..', '..', 'views', 'corte_analytics', 'home.html'));
+});
   
   // GET Details
   router.get('/details', (req, res) => {

@@ -1,6 +1,7 @@
 // Responses
 const HTTP = {
     OK: 200,
+    CREATED: 201,
     MOVED_PERMANENTLY: 301,
     FOUND: 302,
     BAD_REQUEST: 400,

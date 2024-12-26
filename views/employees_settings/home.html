@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Administración de Empleados</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/d2e289d787.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-body-tertiary fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">Pulse-Flare</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" id="navbarDropdownMenuLink" role="button" aria-expanded="false">
+                            Bienvenido, <span id="username"></span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="/">Home</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa-solid fa-bars"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+                            <li><a class="dropdown-item" href="/">Configuración</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/login/logout">Cerrar sesión</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+  <div class="container mt-5">
+    
+    <h1 class="text-center">Gestión de Empleados</h1>
+    <hr>
+
+    <!-- Tabla de Empleados -->
+    <div class="mb-4">
+      <h2>Lista de Empleados</h2>
+      <table class="table table-striped">
+        <thead>
+            <tr>
+              <th>#</th>
+              <th>Nombre</th>
+              <th>Usuario</th>
+              <th>Rol</th>
+              <th>Permisos</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="employeeTable">
+            <!-- Las filas se generarán dinámicamente -->
+          </tbody>          
+      </table>
+    </div>
+
+<!-- Formulario para agregar empleados -->
+<div class="mb-4">
+    <h2>Agregar Empleado</h2>
+    <form id="addEmployeeForm">
+      <div class="mb-3">
+        <label for="name" class="form-label">Nombre</label>
+        <input type="text" id="employee_name" class="form-control" placeholder="Nombre del empleado" required>
+      </div>
+      <div class="mb-3">
+        <label for="username" class="form-label">Usuario</label>
+        <input type="text" id="employee_username" class="form-control" placeholder="Usuario del empleado" required>
+      </div>
+      <div class="mb-3">
+        <label for="password" class="form-label">Contraseña</label>
+        <input type="password" id="password" class="form-control" placeholder="Contraseña del empleado" required>
+      </div>
+      <div class="mb-3">
+        <label for="role" class="form-label">Rol</label>
+        <select id="role" class="form-select" required>
+          <option value="SysAdmin">SysAdmin</option>
+          <option value="Administrador">Administrador</option>
+          <option value="Cajero">Cajero</option>
+        </select>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Permisos</label>
+        <div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="readPermission">
+            <label class="form-check-label" for="readPermission">Leer</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="writePermission">
+            <label class="form-check-label" for="writePermission">Escribir</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="cajeroPermission">
+            <label class="form-check-label" for="cajeroPermission">Cajero</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="adminPermission">
+            <label class="form-check-label" for="adminPermission">Administracion</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="accessHojaCortePermission">
+            <label class="form-check-label" for="accessHojaCortePermission">Acceso a Hoja Corte</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="accessCorteExplorerPermission">
+            <label class="form-check-label" for="accessCorteExplorerPermission">Acceso a Explorador Corte</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="accessCorteAnalyticsPermission">
+            <label class="form-check-label" for="accessCorteAnalyticsPermission">Acceso a Corte Analytics</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="accessCloudReportsPermission">
+            <label class="form-check-label" for="accessCloudReportsPermission">Acceso a Reportes Cloud</label>
+          </div>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary">Agregar</button>
+    </form>
+  </div>
+
+  <div class="modal fade" id="permissionsModal" tabindex="-1" aria-labelledby="permissionsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="permissionsModalLabel">Permisos de <span id="employeeName"></span></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <ul id="permissionsList">
+            <!-- Los permisos se generarán dinámicamente -->
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal para editar empleado -->
+<div class="modal fade" id="editEmployeeModal" tabindex="-1" aria-labelledby="editEmployeeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editEmployeeModalLabel">Editar Empleado</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="editEmployeeForm">
+            <input type="hidden" id="editEmployeeId">
+            <div class="mb-3">
+              <label for="editName" class="form-label">Nombre</label>
+              <input type="text" id="editName" class="form-control" required>
+            </div>
+            <div class="mb-3">
+              <label for="editUsername" class="form-label">Usuario</label>
+              <input type="text" id="editUsername" class="form-control" required>
+            </div>
+            <div class="mb-3">
+              <label for="editPassword" class="form-label">Nueva Contraseña (opcional)</label>
+              <input type="password" id="editPassword" class="form-control">
+            </div>
+            <div class="mb-3">
+              <label for="editRole" class="form-label">Rol</label>
+              <select id="editRole" class="form-select" required>
+                <option value="SysAdmin">SysAdmin</option>
+                <option value="Administrador">Administrador</option>
+                <option value="Cajero">Cajero</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Permisos</label>
+              <div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="editReadPermission">
+                  <label class="form-check-label" for="editReadPermission">Leer</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="editWritePermission">
+                  <label class="form-check-label" for="editWritePermission">Escribir</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="editAdminPermission">
+                  <label class="form-check-label" for="editAdminPermission">Administrar</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="editAccessHojaCortePermission">
+                  <label class="form-check-label" for="editAccessHojaCortePermission">Acceso a Hoja Corte</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="editAccessCorteExplorerPermission">
+                  <label class="form-check-label" for="editAccessCorteExplorerPermission">Acceso a Explorador Corte</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="editCajeroPermission">
+                  <label class="form-check-label" for="editCajeroPermission">Cajero</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="editAccessCorteAnalyticsPermission">
+                  <label class="form-check-label" for="editAccessCorteAnalyticsPermission">Acceso a Corte Analytics</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="editAccessCloudReportsPermission">
+                  <label class="form-check-label" for="editAccessCloudReportsPermission">Acceso a Reportes Cloud</label>
+                </div>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>  
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/scripts/employees_settings/script.js"></script>
+  <script src="/scripts/employees_settings/employee_form.js"></script>
+  <script src="/scripts/employees_settings/edit_employee.js"></script>
+  <script type="module" src="/scripts/app_selector/app_selector.js"></script>
+</body>
+</html>

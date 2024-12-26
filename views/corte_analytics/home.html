@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>HCorte Analytics</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link rel="stylesheet" href="/stylesheets/corte_analytics/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container-fluid">
+      <!-- Header -->
+      <header class="row">
+        <div class="col-12 bg-dark text-white py-3 mb-3">
+          <h1 class="text-center">HCorte Analytics</h1>
+        </div>
+      </header>
+      
+      <!-- Main Content -->
+      <main class="row g-3">
+        <!-- Columna para la gráfica de líneas -->
+        <div class="col-lg-8">
+          <!-- Filtros para la gráfica de líneas -->
+          <div class="card mb-3">
+            <div class="card-body">
+              <div class="d-flex justify-content-between flex-wrap">
+                <!-- Filtro de fecha de inicio -->
+                <div class="me-2 mb-2">
+                  <label for="lineChartStartDate" class="form-label">Fecha de inicio (Líneas):</label>
+                  <input type="date" id="lineChartStartDate" class="form-control" />
+                </div>
+                <!-- Filtro de fecha de fin -->
+                <div class="me-2 mb-2">
+                  <label for="lineChartEndDate" class="form-label">Fecha de fin (Líneas):</label>
+                  <input type="date" id="lineChartEndDate" class="form-control" />
+                </div>
+                <!-- Botón para aplicar filtros -->
+                <button class="btn btn-primary mb-2">Aplicar Filtros</button>
+              </div>
+            </div>
+          </div>
+          <!-- Gráfica de líneas -->
+          <div class="card">
+            <canvas id="acumulados"></canvas>
+          </div>
+        </div>
+        
+        
+        <!-- Columna para la gráfica de pastel -->
+        <div class="col-lg-4">
+          <!-- Filtros para la gráfica de pastel -->
+          <div class="card mb-3">
+            <div class="card-body">
+              <div class="d-flex justify-content-between">
+                <div>
+                  <label for="doughnutChartStartDate" class="form-label">Fecha de inicio (Pastel):</label>
+                  <input type="month" id="dateInput" class="form-control" />
+                </div>
+                <!-- Otros filtros para la gráfica de pastel aquí -->
+                <button class="btn btn-primary" id="sendDate">Aplicar Filtros</button>
+              </div>
+            </div>
+          </div>
+          <!-- Gráfica de pastel -->
+          <div class="card">
+            <canvas id="pastel"></canvas>
+          </div>
+        </div>
+
+        <div class="col-12 mt-3">
+          <div class="card">
+              <div class="card-body">
+                  <h2 class="card-title">Venta por días de la semana</h2>
+                  <p class="card-text">
+                      Seleccione una fecha para analizar las ventas de la semana correspondiente:
+                  </p>
+                  <div class="d-flex justify-content-start align-items-center mb-3">
+                      <div class="me-3">
+                          <label for="weekSelector" class="form-label">Seleccionar día:</label>
+                          <input type="date" id="weekSelector" class="form-control" />
+                      </div>
+                      <button class="btn btn-primary" id="applyWeekFilter">Aplicar Filtro</button>
+                  </div>
+                  <canvas id="barChartWeek" class="chart-size"></canvas>
+              </div>
+          </div>
+      </div>      
+
+        <div class="col-12 mt-3">
+            <div class="card">
+                <div class="card-body">
+                    <h1 class="card-title">Información sobre los Datos</h1>
+                    <p class="card-text">
+                        En esta sección, ofrecemos detalles exhaustivos sobre las gráficas y los datos que se presentan:
+                    </p>
+                    <div id="gpt-analysis">
+                        {{ gpt_analysis|safe }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+
+
+      </main>
+    </div>
+    
+    <script src="/scripts/corte_analytics/calendar.js"></script>
+    <script src="/scripts/corte_analytics/domcontent.js"></script>
+    <script src="/scripts/corte_analytics/graficaLineas.js"></script>
+    <script src="/scripts/corte_analytics/graficaPastel.js"></script>
+    <script src="/scripts/corte_analytics/graficaBarras.js"></script>
+</body>
+</html>

@@ -47,6 +47,10 @@ const employeeSchema = new mongoose.Schema({
         Cajero: {
             type: Boolean,
             default: false
+        },
+        accessCloudReports: {
+            type: Boolean,
+            default: false
         }
     }
 });

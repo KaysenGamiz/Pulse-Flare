@@ -51,6 +51,24 @@ document.addEventListener('DOMContentLoaded', async () => {
         `;
     }
 
+    if (permissions.includes('accessCloudReports')) {
+        appSelector.innerHTML += `
+            <div class="app-option" data-app="cloud_reports">
+                <img src="/images/reports_icon.ico" alt="Cloud Reports">
+                <p>Cloud Reports</p>
+            </div>
+        `;
+    }
+
+    if (permissions.includes('admin')) {
+        appSelector.innerHTML += `
+            <div class="app-option" data-app="employees">
+                <img src="/images/employee_icon.ico" alt="Employees Settings">
+                <p>Employees Settings</p>
+            </div>
+        `;
+    }
+
     // Reagregar los eventos de clic a las nuevas opciones de la aplicación
     const updatedAppOptions = document.querySelectorAll('.app-option');
     updatedAppOptions.forEach(option => {

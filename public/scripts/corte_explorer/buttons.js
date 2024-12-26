@@ -15,13 +15,28 @@ var button_input_between_dates = document.getElementById('boton_input_between_da
 // By RCC
 button_input_by_RCC.addEventListener('click', function() {
     var rcc = input_by_RCC.value;
+
+    if(!containsLetters(rcc)){
+        rcc = `RCC${rcc}`;
+    }
+    
     get_corte_by_RCC(rcc);
+
 });
 
 // Between RCC
 button_input_between_RCC.addEventListener('click', function() {
     var rcc_1 = input_between_RCC_1.value;
     var rcc_2 = input_between_RCC_2.value;
+
+    if (!containsLetters(rcc_1)) {
+        rcc_1 = `RCC${rcc_1}`;
+    }
+
+    if (!containsLetters(rcc_2)) {
+        rcc_2 = `RCC${rcc_2}`;
+    }
+
     get_cortes_between_RCCs(rcc_1, rcc_2);
 });
 

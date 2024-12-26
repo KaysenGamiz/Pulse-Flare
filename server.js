@@ -55,5 +55,5 @@ server.get('/', (req, res) => {
 })
 
 server.listen(PORT, () => {
-  console.log("server running on port " + PORT + "click to www.localhost:" + PORT + "/");
+  console.log(`server running on port ${PORT} click to http://localhost:${PORT}/`);
 })

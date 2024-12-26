@@ -191,9 +191,9 @@ function createTableTotales(data) {
 
 function turno_check(hora) {
     const [hours] = hora.split(':').map(Number);
-    if (hours < 12) {
+    if (hours < 18) {
         return 'Matutino';
-    } else if (hours < 18) {
+    } else if (hours > 19) {
         return 'Vespertino';
     } else {
         return 'Nocturno';

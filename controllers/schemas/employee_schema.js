@@ -51,6 +51,10 @@ const employeeSchema = new mongoose.Schema({
         accessCloudReports: {
             type: Boolean,
             default: false
+        },
+        accessGeneralUtils: {
+            type: Boolean,
+            default: false
         }
     }
 });

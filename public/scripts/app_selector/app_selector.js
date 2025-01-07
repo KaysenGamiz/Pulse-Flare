@@ -60,6 +60,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         `;
     }
 
+    if (permissions.includes('accessGeneralUtils')) {
+        appSelector.innerHTML += `
+            <div class="app-option" data-app="general_utils/factura_analyzer">
+                <img src="/images/reports_icon.ico" alt="Factura Analyzer">
+                <p>Factura Analyzer</p>
+            </div>
+        `;
+    }
+
     if (permissions.includes('admin')) {
         appSelector.innerHTML += `
             <div class="app-option" data-app="employees">

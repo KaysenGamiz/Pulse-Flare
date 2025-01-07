@@ -20,7 +20,7 @@ function editEmployee(index) {
     document.getElementById("editCajeroPermission").checked = permissions.Cajero || false;
     document.getElementById("editAccessCorteAnalyticsPermission").checked = permissions.accessCorteAnalytics || false;
     document.getElementById("editAccessCloudReportsPermission").checked = permissions.accessCloudReports || false;
-  
+    document.getElementById("editAccessGeneralUtilsPermission").checked = permissions.accessGeneralUtils || false;
     // Mostrar el modal
     const editModal = new bootstrap.Modal(document.getElementById("editEmployeeModal"));
     editModal.show();
@@ -45,6 +45,7 @@ function editEmployee(index) {
       Cajero: document.getElementById("editCajeroPermission").checked,
       accessCorteAnalytics: document.getElementById("editAccessCorteAnalyticsPermission").checked,
       accessCloudReports: document.getElementById("editAccessCloudReportsPermission").checked,
+      accessGeneralUtils: document.getElementById("editAccessGeneralUtilsPermission").checked,
     };
   
     try {

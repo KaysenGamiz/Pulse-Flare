@@ -15,6 +15,7 @@ document.getElementById("addEmployeeForm").addEventListener("submit", async func
       Cajero: document.getElementById("cajeroPermission").checked,
       accessCorteAnalytics: document.getElementById("accessCorteAnalyticsPermission").checked,
       accessCloudReports: document.getElementById("accessCloudReportsPermission").checked,
+      accessGeneralUtils: document.getElementById("accessGeneralUtilsPermission").checked,
     };
   
     try {

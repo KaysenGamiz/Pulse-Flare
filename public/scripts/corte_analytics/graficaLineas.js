@@ -10,57 +10,88 @@ var options = {
   }
 };
 
-// Realiza la solicitud GET a la ruta /cortes/date con los parámetros de fecha
-fetch('/cortes/chart-data?date1=2023-08-01&date2=2023-08-31')
-  .then(response => response.json())
-  .then(chartData => {
+// Inicializa la gráfica con datos vacíos
+var myChart = new Chart(acumulados, {
+  type: 'line',
+  data: {
+    labels: [],
+    datasets: []
+  },
+  options: options
+});
 
-    var data = {
-        labels: chartData.labels,
-        datasets: [{
+// Función para actualizar la gráfica
+function updateChart(startDate, endDate) {
+  fetch(`/cortes/chart-data?date1=${startDate}&date2=${endDate}`)
+    .then(response => response.json())
+    .then(chartData => {
+      // Actualiza los datos de la gráfica existente
+      myChart.data.labels = chartData.labels;
+      myChart.data.datasets = [
+        {
           label: 'Acumulado Total Sistema',
           data: chartData.data,
-          backgroundColor: 'rgba(0, 100, 0, 0.2)', // Color de fondo del área bajo la línea
-          borderColor: 'rgba(0, 100, 0, 1)', // Color de la línea
-          borderWidth: 2, // Ancho de la línea
-          pointBackgroundColor: 'rgba(0, 100, 0, 1)', // Color de fondo de los puntos
-          pointBorderColor: '#fff', // Color del borde de los puntos
-          pointRadius: 4, // Radio de los puntos
-          pointHoverRadius: 6 // Radio de los puntos al pasar el mouse
+          backgroundColor: 'rgba(0, 100, 0, 0.2)',
+          borderColor: 'rgba(0, 100, 0, 1)',
+          borderWidth: 2,
+          pointBackgroundColor: 'rgba(0, 100, 0, 1)',
+          pointBorderColor: '#fff',
+          pointRadius: 4,
+          pointHoverRadius: 6
         },
         {
-            label: 'Acumulado Matutino',
-            data: chartData.matutino,
-            backgroundColor: 'rgba(135, 206, 250, 0.2)', // Color de fondo del área bajo la línea
-            borderColor: 'rgba(135, 206, 250, 1)', // Color de la línea
-            borderWidth: 2, // Ancho de la línea
-            pointBackgroundColor: 'rgba(135, 206, 250, 1)', // Color de fondo de los puntos
-            pointBorderColor: '#fff', // Color del borde de los puntos
-            pointRadius: 4, // Radio de los puntos
-            pointHoverRadius: 6 // Radio de los puntos al pasar el mouse
+          label: 'Acumulado Matutino',
+          data: chartData.matutino,
+          backgroundColor: 'rgba(135, 206, 250, 0.2)',
+          borderColor: 'rgba(135, 206, 250, 1)',
+          borderWidth: 2,
+          pointBackgroundColor: 'rgba(135, 206, 250, 1)',
+          pointBorderColor: '#fff',
+          pointRadius: 4,
+          pointHoverRadius: 6
         },
         {
-            label: 'Acumulado Vespertino',
-            data: chartData.vespertino,
-            backgroundColor: 'rgba(0, 0, 139, 0.2)', // Color de fondo del área bajo la línea
-            borderColor: 'rgba(0, 0, 139, 1)', // Color de la línea
-            borderWidth: 2, // Ancho de la línea
-            pointBackgroundColor: 'rgba(0, 0, 139, 1)', // Color de fondo de los puntos
-            pointBorderColor: '#fff', // Color del borde de los puntos
-            pointRadius: 4, // Radio de los puntos
-            pointHoverRadius: 6 // Radio de los puntos al pasar el mouse
-        },
-        ]
-    };
+          label: 'Acumulado Vespertino',
+          data: chartData.vespertino,
+          backgroundColor: 'rgba(0, 0, 139, 0.2)',
+          borderColor: 'rgba(0, 0, 139, 1)',
+          borderWidth: 2,
+          pointBackgroundColor: 'rgba(0, 0, 139, 1)',
+          pointBorderColor: '#fff',
+          pointRadius: 4,
+          pointHoverRadius: 6
+        }
+      ];
 
-    // Crea la gráfica de líneas con los datos recibidos
-    var myChart = new Chart(acumulados, {
-      type: 'line',
-      data: data,
-      options: options
+      // Actualiza la gráfica
+      myChart.update();
+    })
+    .catch(error => {
+      console.error(error);
+      // Maneja el error de la solicitud
     });
-  })
-  .catch(error => {
-    console.error(error);
-    // Maneja el error de la solicitud
-  });
+}
+
+// Al cargar la página, carga los datos del mes actual
+const current_date = new Date();
+const startOfMonth = new Date(current_date.getFullYear(), current_date.getMonth(), 1);
+const formattedStartOfMonth = formatDate(startOfMonth);
+const endOfMonth = new Date(current_date.getFullYear(), current_date.getMonth() + 1, 0);
+const formattedEndOfMonth = formatDate(endOfMonth);
+
+// Cargar datos iniciales
+updateChart(formattedStartOfMonth, formattedEndOfMonth);
+
+// Agregar evento al botón "Aplicar Filtros"
+document.querySelector('.btn-primary').addEventListener('click', function () {
+  const startDate = document.getElementById('lineChartStartDate').value;
+  const endDate = document.getElementById('lineChartEndDate').value;
+
+  if (!startDate || !endDate) {
+    alert('Por favor, selecciona ambas fechas.');
+    return;
+  }
+
+  // Actualiza la gráfica con los filtros seleccionados
+  updateChart(startDate, endDate);
+});

@@ -69,6 +69,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         `;
     }
 
+    if (permissions.includes('accessGeneralUtils')) {
+        appSelector.innerHTML += `
+            <div class="app-option" data-app="general_utils/xml_formatter">
+                <img src="/images/reports_icon.ico" alt="XML Formatter">
+                <p>XML Formatter</p>
+            </div>
+        `;
+    }
+
     if (permissions.includes('admin')) {
         appSelector.innerHTML += `
             <div class="app-option" data-app="employees">

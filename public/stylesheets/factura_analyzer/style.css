@@ -1,0 +1,32 @@
+.toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #d4f8e8; /* Color de fondo verde claro */
+    color: #2e7d32; /* Color del texto verde oscuro */
+    padding: 15px 20px; /* Espaciado interno */
+    border-radius: 5px; /* Bordes redondeados */
+    border: 1px solid #a5d6a7; /* Borde verde suave */
+    font-size: 16px; /* Tamaño del texto */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra suave */
+    opacity: 0;
+    visibility: hidden; /* Oculto por defecto */
+    transition: opacity 0.5s ease, visibility 0.5s ease; /* Transiciones suaves */
+    display: flex;
+    align-items: center; /* Alineación vertical del contenido */
+    gap: 10px; /* Espacio entre el ícono y el texto */
+    justify-content: center;
+}
+
+/* Clase activa para mostrar el toast */
+.toast.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Ícono dentro del toast */
+.toast i {
+    color: #2e7d32; /* Mismo color que el texto */
+    font-size: 20px; /* Tamaño del ícono */
+}

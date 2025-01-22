@@ -38,7 +38,9 @@ function displayResults(results) {
         const productos = results[uuid];
         const tableHTML = `
             <div class="mt-4">
-                <h3>Factura UUID: ${uuid}</h3>
+                <h3>Factura UUID: ${uuid} 
+                    <i class="fa-regular fa-copy" style="cursor: pointer;" onclick="copyToClipboard('${uuid}')"></i>
+                </h3>
                 <table class="table table-striped">
                     <thead>
                         <tr>
@@ -62,3 +64,4 @@ function displayResults(results) {
         resultsContainer.insertAdjacentHTML("beforeend", tableHTML);
     });
 }
+

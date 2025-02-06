@@ -15,9 +15,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const userName = await getUserName();
     const permissions = await getUserPermissions();
 
-    console.log(userName)
-    console.log(permissions)
-
     // Actualizar el nombre del usuario en la navbar
     document.getElementById('username').textContent = userName;
 

@@ -60,8 +60,18 @@ async function loadProcessedFiles() {
 
         const files = await response.json();
         downloadList.innerHTML = "";
+        
+        const validFiles = files.filter(file => file.name && file.name.trim() !== "");
+
+        if (validFiles.length === 0) {
+            downloadList.innerHTML = "";
+            return;
+        }
 
         files.forEach(file => {
+            if (!file.name || file.name.trim() === '') {
+                return;
+            }
             const processedFile = document.createElement('a');
             processedFile.href = `/general_utils/xml_formatter/download/${file.name}`; // Apunta a nuestro servidor
             processedFile.textContent = `📂 ${file.name}`;

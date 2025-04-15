@@ -3,6 +3,7 @@ const router = express.Router();
 const path = require('path');
 const Reading = require(path.join(__dirname, 'schemas', 'readings_schema.js'));
 const { setLatestLiveReading } = require(path.join(__dirname, '..', 'state.js'));
+const moment = require('moment-timezone');
 
 process.env.TZ = 'America/Los_Angeles'; // Pacific Time
 
@@ -20,20 +21,21 @@ router.post('/esp32/upload', async (req, res) => {
       return res.status(400).json({ error: 'temperature, device_id, and humidity are required' });
     }
   
-    const now = new Date();
-    const hour = now.getHours();
-    const minute = now.getMinutes();
-  
+    const now = moment.tz('America/Los_Angeles');
+
+    const hour = now.hour();
+    const minute = now.minute();
+
     const liveReading = {
-      device_id,
-      temperature,
-      humidity,
-      timestamp: now.toISOString(),
-      year: now.getFullYear(),
-      month: now.getMonth() + 1,
-      day: now.getDate(),
-      hour,
-      minute
+    device_id,
+    temperature,
+    humidity,
+    timestamp: now.toISOString(), // Ahora en Pacific Time con offset -07:00
+    year: now.year(),
+    month: now.month() + 1,
+    day: now.date(),
+    hour,
+    minute
     };
 
     setLatestLiveReading(liveReading);

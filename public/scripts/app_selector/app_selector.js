@@ -75,6 +75,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         `;
     }
 
+    if (permissions.includes('accessGeneralUtils')) {
+        appSelector.innerHTML += `
+            <div class="app-option" data-app="general_utils/temperatures">
+                <img src="/images/reports_icon.ico" alt="Temp Monitor">
+                <p>Temp Monitor</p>
+            </div>
+        `;
+    }
+
     if (permissions.includes('admin')) {
         appSelector.innerHTML += `
             <div class="app-option" data-app="employees">

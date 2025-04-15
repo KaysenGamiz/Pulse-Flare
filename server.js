@@ -7,6 +7,7 @@ const router = require(path.join(__dirname, 'controllers', 'router.js'))
 const config = require(path.join(__dirname, 'config', 'config.js'));
 const login_router = require(path.join(__dirname, 'controllers', 'login.js'))
 const authMiddleware = require(path.join(__dirname, 'controllers', 'middlewares.js'))
+const esp32_router = require(path.join(__dirname, 'controllers', 'esp32.js'));
 
 // Mongo DB
 
@@ -44,6 +45,8 @@ server.set('views', path.join(__dirname, 'views'));
 
 // Ruta de login sin autenticación
 server.use('/login', login_router);
+
+server.use('/api', esp32Router);
 
 // Middleware de autenticación
 server.use(authMiddleware);

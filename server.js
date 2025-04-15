@@ -46,7 +46,7 @@ server.set('views', path.join(__dirname, 'views'));
 // Ruta de login sin autenticación
 server.use('/login', login_router);
 
-server.use('/api', esp32Router);
+server.use('/api', esp32_router);
 
 // Middleware de autenticación
 server.use(authMiddleware);

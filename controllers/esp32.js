@@ -40,8 +40,7 @@ router.post('/esp32/upload', async (req, res) => {
 
     setLatestLiveReading(liveReading);
   
-    // const shouldSave = ([8, 15, 22].includes(hour) && minute === 0);
-    const shouldSave = (minute %2 === 0); // Guardar cada 2 minutos
+    const shouldSave = ([8, 15, 22].includes(hour) && minute === 0);
   
     if (!shouldSave) {
       return res.status(200).json({ message: 'Lectura recibida en tiempo real (no guardada)', realtime: true });

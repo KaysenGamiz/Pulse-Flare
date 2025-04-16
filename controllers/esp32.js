@@ -48,7 +48,7 @@ router.post('/esp32/upload', async (req, res) => {
     }
   
     try {
-      const newReading = new Reading(latestLiveReading);
+      const newReading = new Reading(liveReading);
       const saved = await newReading.save();
       res.status(201).json({ message: 'Lectura guardada en MongoDB', id: saved._id });
     } catch (err) {

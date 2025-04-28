@@ -174,14 +174,14 @@ router.get('/report', async (req, res) => {
       }
     }
 
-    res.render('general_utils\\temperatures\\report.ejs', {
+    res.render(path.join('general_utils', 'temperatures', 'report'), {
       year: yearNum,
       month: monthNum,
       week: weekNum,
       startDay,
       endDay,
       reportData
-    });
+    });    
   } catch (err) {
     console.error(err);
     res.status(500).send('Error generando el reporte');

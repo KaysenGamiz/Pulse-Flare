@@ -173,7 +173,7 @@ document.getElementById('printReportBtn').addEventListener('click', function () 
   const year = this.dataset.year;
   const month = this.dataset.month;
   const week = this.dataset.week;
-  window.open(`/temperatures/report?year=${year}&month=${month}&week=${week}`, '_blank');
+  window.open(`/general_utils/temperatures/report?year=${year}&month=${month}&week=${week}`, '_blank');
 });
 
 document.addEventListener('DOMContentLoaded', async function () {

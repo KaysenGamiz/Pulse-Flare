@@ -174,7 +174,7 @@ router.get('/report', async (req, res) => {
       }
     }
 
-    res.render('temperatures/report', {
+    res.render('general_utils\\temperatures\\report.ejs', {
       year: yearNum,
       month: monthNum,
       week: weekNum,

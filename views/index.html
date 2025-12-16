@@ -9,22 +9,28 @@
     <script src="https://kit.fontawesome.com/d2e289d787.js" crossorigin="anonymous"></script>
 </head>
 <body>
-
-    <nav class="navbar navbar-expand-lg navbar-light bg-body-tertiary fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-light bg-white fixed-top">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/">Pulse-Flare</a>
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-bolt me-2"></i>
+                Pulse-Flare
+            </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link active" href="#" id="navbarDropdownMenuLink" role="button" aria-expanded="false">
+                        <a class="nav-link" href="#" id="navbarDropdownMenuLink" role="button" aria-expanded="false">
+                            <i class="fas fa-user me-1"></i>
                             Bienvenido, <span id="username"></span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="/">Home</a>
+                        <a class="nav-link" aria-current="page" href="/">
+                            <i class="fas fa-home me-1"></i>
+                            Home
+                        </a>
                     </li>
                 </ul>
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
@@ -33,9 +39,9 @@
                             <i class="fa-solid fa-bars"></i>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
-                            <li><a class="dropdown-item" href="/">Configuración</a></li>
+                            <li><a class="dropdown-item" href="/"><i class="fas fa-cog me-2"></i>Configuración</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="/login/logout">Cerrar sesión</a></li>
+                            <li><a class="dropdown-item" href="/login/logout"><i class="fas fa-sign-out-alt me-2"></i>Cerrar sesión</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -43,10 +49,37 @@
         </div>
     </nav>
 
-    <div class="container mt-4">
-        <h1>Escoge tu aplicación</h1>
-        <div class="selector" id="app-selector">
+    <div class="page-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="page-title">Panel de Aplicaciones</h1>
+                    <p class="page-subtitle">Selecciona la aplicación que necesitas usar</p>
+                </div>
+                <div class="col-md-4">
+                    <div class="stats-card">
+                        <div class="stats-number" id="app-count">0</div>
+                        <p class="stats-label">Aplicaciones Disponibles</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Botones de navegación por secciones -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="section-nav-container">
+                        <h6 class="section-nav-title">Ir a sección:</h6>
+                        <div class="section-nav-buttons" id="section-nav-buttons">
+                            <!-- Los botones se generarán dinámicamente -->
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
+    </div>
+
+    <div class="container">
+        <div id="app-selector"></div>
     </div>
     
     <script type="module" src="/scripts/app_selector/app_selector.js"></script>

@@ -1,58 +1,237 @@
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding-top: 76px;
 }
 
-.container {
+.navbar {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+}
+
+.navbar-brand {
+    font-weight: 600;
+    color: #0d6efd !important;
+}
+
+.page-header {
+    background: white;
+    border-bottom: 1px solid #e9ecef;
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+}
+
+.page-title {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #212529;
+    margin-bottom: 0.5rem;
+}
+
+.page-subtitle {
+    color: #6c757d;
+    font-size: 1.1rem;
+    margin-bottom: 0;
+}
+
+.apps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.app-card {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.app-card:hover {
+    border-color: #0d6efd;
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.15);
+    transform: translateY(-2px);
+}
+
+.app-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    color: white;
+    overflow: hidden;
+}
+
+.app-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.app-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #212529;
+    margin-bottom: 0.5rem;
+}
+
+.app-description {
+    color: #6c757d;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    flex-grow: 1;
+    margin-bottom: 1rem;
+}
+
+.app-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    border-radius: 0.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    align-self: flex-start;
+}
+
+/* Colores específicos para cada tipo de aplicación */
+.production .app-icon { background-color: #0d6efd; }
+.production .app-badge { background-color: #e7f1ff; color: #0d6efd; }
+
+.analytics .app-icon { background-color: #20c997; }
+.analytics .app-badge { background-color: #d1ecf1; color: #20c997; }
+
+.reports .app-icon { background-color: #6f42c1; }
+.reports .app-badge { background-color: #e2e3f1; color: #6f42c1; }
+
+.utilities .app-icon { background-color: #fd7e14; }
+.utilities .app-badge { background-color: #fff3cd; color: #fd7e14; }
+
+.monitoring .app-icon { background-color: #dc3545; }
+.monitoring .app-badge { background-color: #f8d7da; color: #dc3545; }
+
+.admin .app-icon { background-color: #6c757d; }
+.admin .app-badge { background-color: #f8f9fa; color: #6c757d; }
+.admin .app-card {
+    border-color: #ffc107;
+    position: relative;
+}
+.admin .app-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background-color: #ffc107;
+    border-radius: 0.5rem 0.5rem 0 0;
+}
+
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.apps-section {
+    margin-bottom: 3rem;
+}
+
+.stats-card {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
     text-align: center;
 }
 
-.selector {
+.stats-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #0d6efd;
+    margin-bottom: 0.5rem;
+}
+
+.stats-label {
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-bottom: 0;
+}
+
+.section-nav-container {
+    background: rgba(248, 249, 250, 0.8);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    border: 1px solid #e9ecef;
+}
+
+.section-nav-title {
+    color: #6c757d;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    font-size: 0.9rem;
+}
+
+.section-nav-buttons {
     display: flex;
-    justify-content: center;
-    margin-top: 20px;
-    flex-wrap: wrap; /* Allow flex items to wrap */
+    flex-wrap: wrap;
+    gap: 0.5rem;
 }
 
-.app-option {
-    background-color: white;
-    border: 2px solid #ccc;
-    border-radius: 10px;
-    padding: 20px;
-    margin: 10px; /* Adjust margin to be uniform */
-    width: 150px;
-    cursor: pointer;
-    transition: transform 0.3s, border-color 0.3s;
+.section-nav-btn {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    color: #495057;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
-.app-option:hover {
-    transform: scale(1.1);
-    border-color: #007aff;
+.section-nav-btn:hover {
+    background: #0d6efd;
+    border-color: #0d6efd;
+    color: white;
+    text-decoration: none;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.app-option img {
-    width: 100px;
-    height: 100px;
+.section-nav-btn i {
+    font-size: 0.8rem;
 }
 
-.app-option p {
-    margin-top: 10px;
-    font-size: 1.2em;
-}
-
-/* Responsive styles */
 @media (max-width: 768px) {
-    .selector {
-        flex-direction: column;
-        align-items: center;
+    .apps-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .page-title {
+        font-size: 1.5rem;
     }
 
-    .app-option {
-        width: 80%; /* Make the app options take up more space */
+    .section-nav-buttons {
+    flex-direction: column;
+    }
+
+    .section-nav-btn {
+        justify-content: center;
     }
 }

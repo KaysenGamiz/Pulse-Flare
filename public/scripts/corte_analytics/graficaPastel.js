@@ -1,57 +1,52 @@
-var pastel = document.getElementById('pastel').getContext('2d');
-var pastelChart;
+const ctxDough = document.getElementById('pastel').getContext('2d');
+let pastelChart;
 
-var options = {
-    responsive: true,
-    plugins: {
-        legend: {
-            labels: {
-                font: {
-                    size: 16 // Ajusta el tamaño de fuente de las etiquetas (labels) en el gráfico
-                }
-            }
+function graficaPastel(date) {
+  fetch(`/cortes/accumulated-data?date=${date}`)
+    .then(r => r.json())
+    .then(data => {
+      const config = {
+        type: 'doughnut',
+        data: {
+          labels: ['Dólares', 'Efectivo', 'Tarjeta'],
+          datasets: [{
+            data: [data.dolaresEfectivo, data.totalEfectivo, data.tarjeta],
+            backgroundColor: ['#FF6384', '#0d6efd', '#ffc107'],
+            hoverOffset: 8,
+            borderWidth: 2,
+            borderColor: '#fff'
+          }]
         },
-        tooltip: {
-            titleFont: {
-                size: 16 // Ajusta el tamaño de fuente del tooltip cuando se muestra el acumulado
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '60%',
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                boxWidth: 12,
+                padding: 16,
+                font: { family: "'Segoe UI', sans-serif", size: 12 }
+              }
             },
-            bodyFont: {
-                size: 16 // Ajusta el tamaño de fuente del texto dentro del tooltip
+            tooltip: {
+              callbacks: {
+                label: ctx => {
+                  const value = ctx.parsed;
+                  const total = ctx.dataset.data.reduce((a,b)=>a+b,0);
+                  const pct = ((value/total)*100).toFixed(1);
+                  return `${ctx.label}: $${value.toLocaleString()} (${pct}%)`;
+                }
+              },
+              padding: 8,
+              cornerRadius: 4
             }
+          }
         }
-    }
-};
+      };
 
-function graficaPastel(date){
-
-    fetch(`/cortes/accumulated-data?date=${date}`)
-    .then(response => response.json())
-    .then(pastelData => {
-        var data = {
-            labels: ['Dolares', 'Efectivo', 'Tarjeta'],
-            datasets: [{
-                data: [pastelData.dolaresEfectivo, pastelData.totalEfectivo, pastelData.tarjeta],
-                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
-                hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56']
-            }]
-        };
-
-        if (pastelChart) {
-            pastelChart.destroy();
-        }
-
-        console.log(`Datos:\nDolares: ${pastelData.dolaresEfectivo}\nEfectivo: ${pastelData.totalEfectivo}\nTarjeta: ${pastelData.tarjeta}\nDate: ${date}`)
-
-        pastelChart = new Chart(pastel, {
-            type: 'doughnut',
-            data: data,
-            options: options
-        });
-    })
-    .catch(error => {
-        console.error(error);
-        // Maneja el error de la solicitud
+      if (pastelChart) pastelChart.destroy();
+      pastelChart = new Chart(ctxDough, config);
     });
-
 }
-

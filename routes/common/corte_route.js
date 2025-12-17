@@ -240,8 +240,8 @@ router.get('/daily-accumulated', (req, res) => {
             return res.status(HTTP.BAD_REQUEST).json({ error: 'El parámetro "date" es requerido en formato YYYY-MM-DD.' });
         }
 
-        const fechaInicio = moment.tz(date, 'America/Los_Angeles').startOf('month').toDate();
-        const fechaFin = moment.tz(date, 'America/Los_Angeles').endOf('month').toDate();
+        const fechaInicio = moment.tz(date, 'America/Los_Angeles').startOf('isoWeek').toDate();
+        const fechaFin = moment.tz(date, 'America/Los_Angeles').endOf('isoWeek').toDate();
         
         Corte.aggregate([
             {
@@ -267,20 +267,20 @@ router.get('/daily-accumulated', (req, res) => {
             }
         ])
         .then((result) => {
-            // Ajustar el orden para que el primer día sea lunes
-            const dayNames = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
             const adjustedDayNames = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+            
+            // Crear un array de 7 días con valor 0 por defecto
+            const finalData = adjustedDayNames.map(name => ({ dayName: name, totalSistemaSum: 0 }));
 
-            // Mapear y reorganizar los días
-            const formattedResult = result.map(item => {
-                const adjustedDayIndex = item.dayOfWeek === 1 ? 7 : item.dayOfWeek - 1; // Convertir Domingo (1) al final (7)
-                return {
-                    dayName: adjustedDayNames[adjustedDayIndex - 1],
-                    totalSistemaSum: item.totalSistemaSum
-                };
+            // Llenar con los datos reales encontrados en la DB
+            result.forEach(item => {
+                const adjustedIndex = item.dayOfWeek === 1 ? 6 : item.dayOfWeek - 2; 
+                if (finalData[adjustedIndex]) {
+                    finalData[adjustedIndex].totalSistemaSum = item.totalSistemaSum;
+                }
             });
 
-            res.status(HTTP.OK).json(formattedResult);
+            res.status(HTTP.OK).json(finalData);
         })
         .catch((error) => {
             console.error(error);

@@ -53,67 +53,74 @@
     </div>
   </div>
 
-  <div class="container">
+<div class="container">
     <main class="row g-3">
-      <!-- Gráfica de líneas -->
+      
       <div class="col-lg-8">
         <div class="card mb-3">
-          <div class="card-body d-flex flex-wrap justify-content-between">
+          <div class="card-body d-flex flex-wrap justify-content-between align-items-end">
             <div class="me-2 mb-2">
-              <label for="lineChartStartDate" class="form-label">Inicio (Líneas):</label>
-              <input type="date" id="lineChartStartDate" class="form-control"/>
+              <label for="lineChartStartDate" class="form-label small fw-bold">Inicio:</label>
+              <input type="date" id="lineChartStartDate" class="form-control form-control-sm"/>
             </div>
             <div class="me-2 mb-2">
-              <label for="lineChartEndDate" class="form-label">Fin (Líneas):</label>
-              <input type="date" id="lineChartEndDate" class="form-control"/>
+              <label for="lineChartEndDate" class="form-label small fw-bold">Fin:</label>
+              <input type="date" id="lineChartEndDate" class="form-control form-control-sm"/>
             </div>
-            <button class="btn btn-primary mb-2">Aplicar Filtros</button>
+            <button class="btn btn-dark btn-sm mb-2" id="btnLineFilter">Aplicar Filtros</button>
           </div>
         </div>
-        <div class="card mb-4">
-          <canvas id="acumulados"></canvas>
+        <div class="card mb-4 shadow-sm">
+          <div class="card-body" style="position: relative; height: 350px;">
+            <canvas id="acumulados"></canvas>
+          </div>
         </div>
       </div>
 
-      <!-- Gráfica de pastel -->
       <div class="col-lg-4">
         <div class="card mb-3">
           <div class="card-body d-flex justify-content-between align-items-end">
-            <div>
-              <label for="dateInput" class="form-label">Mes (Pastel):</label>
-              <input type="month" id="dateInput" class="form-control"/>
+            <div class="flex-grow-1 me-2">
+              <label for="dateInput" class="form-label small fw-bold">Mes (Pastel):</label>
+              <input type="month" id="dateInput" class="form-control form-control-sm"/>
             </div>
-            <button class="btn btn-primary" id="sendDate">Aplicar</button>
+            <button class="btn btn-dark btn-sm" id="sendDate">Aplicar</button>
           </div>
         </div>
-        <div class="card mb-4">
-          <canvas id="pastel"></canvas>
+        <div class="card mb-4 shadow-sm">
+          <div class="card-body" style="position: relative; height: 350px;">
+            <canvas id="pastel"></canvas>
+          </div>
         </div>
       </div>
 
-      <!-- Gráfica de barras por semana -->
       <div class="col-12">
-        <div class="card mb-4">
-          <div class="card-body">
-            <h2 class="section-title"><i class="fas fa-calendar-week me-2"></i>Venta por día de la semana</h2>
-            <div class="d-flex align-items-center mb-3">
-              <div class="me-3">
-                <label for="weekSelector" class="form-label">Seleccionar día:</label>
-                <input type="date" id="weekSelector" class="form-control"/>
+          <div class="card mb-4 shadow-sm">
+              <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                      <h2 class="section-title h5 mb-0"><i class="fas fa-copy me-2"></i>Comparativa Semanal</h2>
+                      <div class="d-flex align-items-center">
+                          <input type="week" id="weekSelector" class="form-control form-control-sm me-2" style="width: auto;"/>
+                          <button class="btn btn-outline-dark btn-sm me-2" id="btnAddWeek">Añadir Semana</button>
+                          <button class="btn btn-danger btn-sm" id="btnResetWeeks">Limpiar</button>
+                      </div>
+                  </div>
+                  <div id="selectedWeeksContainer" class="mb-3"></div>
+                  
+                  <div style="position: relative; height: 350px; width: 100%;">
+                      <canvas id="barChartWeek"></canvas>
+                  </div>
               </div>
-              <button class="btn btn-primary" id="applyWeekFilter">Aplicar</button>
-            </div>
-            <canvas id="barChartWeek" class="chart-size"></canvas>
           </div>
-        </div>
       </div>
 
-      <!-- Sección de análisis -->
       <div class="col-12">
-        <div class="card mb-5">
+        <div class="card mb-5 border-0 shadow-sm" style="background-color: #fcfcfc;">
           <div class="card-body">
-            <h2 class="card-title">Información sobre los datos</h2>
-            <div id="gpt-analysis">{{ gpt_analysis|safe }}</div>
+            <h2 class="card-title h5 border-bottom pb-2"><i class="fas fa-robot me-2"></i>Análisis Inteligente</h2>
+            <div id="gpt-analysis" class="mt-3 text-muted">
+                {{ gpt_analysis|safe }}
+            </div>
           </div>
         </div>
       </div>
@@ -121,12 +128,13 @@
   </div>
 
   <!-- Scripts (la lógica no cambia) -->
-  <script type="module" src="/scripts/corte_analytics/domcontent.js"></script>
+  <script type="module" src="/scripts/corte_analytics/main.js"></script>
+  <!-- <script type="module" src="/scripts/corte_analytics/domcontent.js"></script>
   <script src="/scripts/corte_analytics/utils.js"></script>
   <script src="/scripts/corte_analytics/calendar.js"></script>
   <script src="/scripts/corte_analytics/graficaLineas.js"></script>
   <script src="/scripts/corte_analytics/graficaPastel.js"></script>
-  <script src="/scripts/corte_analytics/graficaBarras.js"></script>
+  <script src="/scripts/corte_analytics/graficaBarras.js"></script> -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
 </body>

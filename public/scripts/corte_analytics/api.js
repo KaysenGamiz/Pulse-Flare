@@ -6,9 +6,9 @@ const BASE_URL = '/cortes';
 
 export const API = {
     /**
-     * Obtiene datos para la gráfica de líneas (Acumulados)
+     * Obtiene datos para la gráfica de líneas (Acumulados por día)
      * @param {string} start - Fecha inicio YYYY-MM-DD
-     * @param {string} end - Fecha fin YYYY-MM-DD
+     * @param {string} end   - Fecha fin   YYYY-MM-DD
      */
     getLineData: async (start, end) => {
         const response = await fetch(`${BASE_URL}/chart-data?date1=${start}&date2=${end}`);
@@ -17,12 +17,15 @@ export const API = {
     },
 
     /**
-     * Obtiene datos para la gráfica de pastel (Distribución de pagos)
-     * @param {string} date - Mes o fecha YYYY-MM
+     * Obtiene el resumen completo del rango en una sola llamada:
+     * totalSistema (card), dolaresEfectivo + totalEfectivo + tarjeta (pastel)
+     * Reemplaza: getPastelData() y getSummary()
+     * @param {string} start - Fecha inicio YYYY-MM-DD
+     * @param {string} end   - Fecha fin   YYYY-MM-DD
      */
-    getPastelData: async (date) => {
-        const response = await fetch(`${BASE_URL}/accumulated-data?date=${date}`);
-        if (!response.ok) throw new Error('Error al obtener datos de pastel');
+    getRangeSummary: async (start, end) => {
+        const response = await fetch(`${BASE_URL}/range-summary?date1=${start}&date2=${end}`);
+        if (!response.ok) throw new Error('Error al obtener el resumen del rango');
         return await response.json();
     },
 
@@ -38,7 +41,7 @@ export const API = {
 
     /**
      * Envía datos a GPT para obtener el análisis de texto
-     * @param {Object} data - Objeto con Dolares, Efectivo, Tarjeta y Date
+     * @param {Object} data - Objeto con Dolares, Efectivo, Tarjeta, DateStart y DateEnd
      */
     postForAnalysis: async (data) => {
         const response = await fetch('/analisis', {

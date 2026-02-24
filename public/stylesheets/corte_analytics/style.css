@@ -1,34 +1,283 @@
-/* Importa estilos base comunes */
+/* =============================================================================
+   HCorte Analytics — style.css
+   Organización: Layout → Filter Bar → Summary Cards → Charts → Responsive
+   Complementa Bootstrap 5, no lo reemplaza.
+   ============================================================================= */
+
 @import "/stylesheets/app_selector/styles.css";
 
-/* Ajustes específicos para analytics */
+
+/* =============================================================================
+   1. LAYOUT GENERAL
+   ============================================================================= */
+
 .page-header {
   margin-bottom: 2rem;
 }
 
-.section-title {
-  font-size: 1.25rem;
+.page-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.page-subtitle {
+  font-size: 0.9rem;
+  color: #64748b;
+  margin: 0;
+}
+
+
+/* =============================================================================
+   2. FILTER BAR
+   ============================================================================= */
+
+.filter-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  background: #fff;
+  border: 1px solid #d2d2d2;
+  border-radius: 12px;
+  padding: 10px 20px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .04);
+}
+
+.filter-bar__label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: #000;
+  white-space: nowrap;
+}
+
+.filter-bar__label i {
+  font-size: 0.85rem;
+  color: #000;
+}
+
+.filter-bar__divider {
+  width: 1px;
+  height: 28px;
+  background: #e2e8f0;
+  flex-shrink: 0;
+}
+
+.filter-bar__fields {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.filter-field label {
+  margin: 0;
+  padding-left: 2px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: #495057;
+}
+
+.filter-input {
+  padding: 5px 10px;
+  font-size: 0.85rem;
+  color: #1e293b;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  outline: none;
+  cursor: pointer;
+  transition: border-color .2s, box-shadow .2s;
+}
+
+.filter-input:focus {
+  background: #fff;
+  border-color: #2c3e50;
+  box-shadow: 0 0 0 3px rgba(44, 62, 80, .08);
+}
+
+.filter-bar__arrow {
+  padding-top: 16px; /* compensa la altura del label */
+  font-size: 0.75rem;
+  color: #cbd5e1;
+}
+
+.filter-bar__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .18s, box-shadow .18s, transform .12s;
+}
+
+.filter-btn:active {
+  transform: scale(.97);
+}
+
+.filter-btn--apply {
+  background: #1e293b;
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(30, 41, 59, .2);
+}
+
+.filter-btn--apply:hover {
+  background: #0f172a;
+  box-shadow: 0 4px 10px rgba(30, 41, 59, .28);
+}
+
+.filter-btn--reset {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.filter-btn--reset:hover {
+  background: #e2e8f0;
+  color: #1e293b;
+}
+
+
+/* =============================================================================
+   3. SUMMARY CARDS
+   ============================================================================= */
+
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.summary-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  background: #fff;
+  border: 1px solid #d2d2d2;
+  border-radius: 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .05);
+  transition: box-shadow .2s, transform .2s;
+}
+
+.summary-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, .09);
+  transform: translateY(-1px);
+}
+
+.summary-card__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  font-size: 1rem;
+  color: #fff;
+}
+
+.summary-card__icon--sistema  { background: #1e293b; }
+.summary-card__icon--efectivo { background: #0d6efd; }
+.summary-card__icon--tarjeta  { background: #ffc107; color: #1e293b !important; }
+.summary-card__icon--ticket   { background: #6c5ce7; }
+
+.summary-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.summary-card__label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: #94a3b8;
+  white-space: nowrap;
+}
+
+.summary-card__value-row {
+  display: flex;
+  align-items: center;
+}
+
+.summary-card__value {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #1e293b;
+  line-height: 1.15;
+  letter-spacing: -.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: opacity .3s;
+}
+
+.summary-card__range,
+.summary-card__sub {
+  font-size: 0.7rem;
+  color: #cbd5e1;
+  margin-top: 1px;
+  white-space: nowrap;
+}
+
+
+/* =============================================================================
+   4. CHARTS
+   ============================================================================= */
+
+/* Título de cada card de gráfica */
+.card-header {
+  background: #fff;
+  border-bottom: 1px solid #e9ecef;
+  padding: 14px 20px;
+}
+
+.chart-title {
+  font-size: 0.95rem;
   font-weight: 600;
   color: #495057;
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 2px solid #e9ecef;
+  margin: 0;
 }
 
-/* Ajustes de tamaño y sombra en cards (ya vienen de app_selector/styles.css) */
-.chart-size {
-  max-width: 100%;
-  height: 400px;
-  margin: auto;
-}
-
-.card {
-  /* Hereda box-shadow y border-radius del common CSS */
-}
-
-/* Si quieres ajustar padding interno */
-.card-body {
-  padding: 1.5rem;
+/* Altura uniforme para todos los canvas */
+.chart-body {
+  position: relative;
+  height: 350px;
 }
 
 
+/* =============================================================================
+   5. RESPONSIVE
+   ============================================================================= */
+
+@media (max-width: 600px) {
+  .filter-bar__divider  { display: none; }
+  .filter-bar__actions  { margin-left: 0; width: 100%; }
+  .filter-btn           { flex: 1; justify-content: center; }
+}

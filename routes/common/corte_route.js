@@ -177,57 +177,85 @@ router.get('/chart-data', (req, res) => {
         return res.status(HTTP.BAD_REQUEST).json({ error: 'Formato de fecha inválido. Utiliza el formato YYYY-MM-DD' });
     }
 });
-  
-// GET Accumulated Data for a Month
-router.get('/accumulated-data', (req, res) => {
-    const { date } = req.query;
+
+// GET Range Summary — métricas completas para un rango de fechas
+// Uso: GET /cortes/range-summary?date1=YYYY-MM-DD&date2=YYYY-MM-DD
+router.get('/range-summary', (req, res) => {
+    const { date1, date2 } = req.query;
+
+    if (!date1 || !date2) {
+        return res.status(HTTP.BAD_REQUEST).json({
+            error: 'Se requieren los parámetros date1 y date2 (YYYY-MM-DD)'
+        });
+    }
 
     try {
-        const fechaInicio = moment.tz(date, 'America/Los_Angeles').startOf('month').toDate();
-        const fechaFin = moment.tz(date, 'America/Los_Angeles').endOf('month').toDate();
+        const fechaInicio = moment.tz(date1, 'YYYY-MM-DD', 'America/Los_Angeles').startOf('day').toDate();
+        const fechaFin    = moment.tz(date2, 'YYYY-MM-DD', 'America/Los_Angeles').endOf('day').toDate();
 
         Corte.aggregate([
-        {
-            $match: {
-            fechaHora: { $gte: fechaInicio, $lte: fechaFin },
+            {
+                $match: {
+                    fechaHora: { $gte: fechaInicio, $lte: fechaFin }
+                }
             },
-        },
-        {
-            $group: {
-                _id: null,
-                dolaresEfectivo: {
-                    $sum: {
-                        $cond: [
-                            {
-                                $and: [
-                                    { $ne: ['$dolares.TC', 0] },
-                                    { $ne: ['$dolares.efectivo', 0] }
-                                ]
-                            },
-                            { $multiply: ['$dolares.TC', '$dolares.efectivo'] }, 0
-                        ]
-                    }
-                },
-                totalEfectivo: { $sum: '$totalEfectivo' },
-                tarjeta: { $sum: '$tarjeta' },
-            },
-        },
+            {
+                $group: {
+                    _id: null,
+                    // Cards
+                    totalSistema:  { $sum: '$totalSistema' },
+                    totalEfectivo: { $sum: '$totalEfectivo' },
+                    tarjeta:       { $sum: '$tarjeta' },
+                    totalCortes:   { $sum: 1 },          // conteo para ticket promedio
+                    // Pastel
+                    dolaresEfectivo: {
+                        $sum: {
+                            $cond: [
+                                {
+                                    $and: [
+                                        { $ne: ['$dolares.TC', 0] },
+                                        { $ne: ['$dolares.efectivo', 0] }
+                                    ]
+                                },
+                                { $multiply: ['$dolares.TC', '$dolares.efectivo'] },
+                                0
+                            ]
+                        }
+                    },
+                }
+            }
         ])
         .then((result) => {
-            const accumulatedData = result[0] || {
+            const raw = result[0] || {
+                totalSistema:    0,
+                totalEfectivo:   0,
+                tarjeta:         0,
+                totalCortes:     0,
                 dolaresEfectivo: 0,
-                totalEfectivo: 0,
-                tarjeta: 0,
             };
 
-            res.status(HTTP.OK).json(accumulatedData);
+            // Ticket promedio = totalSistema / número de cortes
+            const ticketPromedio = raw.totalCortes > 0
+                ? raw.totalSistema / raw.totalCortes
+                : 0;
+
+            res.status(HTTP.OK).json({
+                totalSistema:    raw.totalSistema,
+                totalEfectivo:   raw.totalEfectivo,
+                tarjeta:         raw.tarjeta,
+                ticketPromedio,
+                dolaresEfectivo: raw.dolaresEfectivo,
+            });
         })
         .catch((error) => {
             console.error(error);
-            res.status(HTTP.INTERNAL_SERVER_ERROR).json({ error: 'Error al obtener los datos acumulados' });
+            res.status(HTTP.INTERNAL_SERVER_ERROR).json({ error: 'Error al obtener el resumen del rango' });
         });
+
     } catch (error) {
-        return res.status(HTTP.BAD_REQUEST).json({ error: 'Formato de fecha inválido. Utiliza el formato YYYY-MM-DD' });
+        return res.status(HTTP.BAD_REQUEST).json({
+            error: 'Formato de fecha inválido. Utiliza el formato YYYY-MM-DD'
+        });
     }
 });
 

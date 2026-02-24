@@ -66,11 +66,12 @@ export async function initLineChart(start, end) {
     lineChart = new Chart(ctx, config);
 }
 
-// ─────────────────────────────────────────────
-// 2. GRÁFICA DE PASTEL — Distribución de pagos
-// ─────────────────────────────────────────────
-export async function initPieChart(date) {
-    const data = await API.getPastelData(date);
+// ──────────────────────────────────────────────────────────────────────────────
+// 2. GRÁFICA DE PASTEL — Distribución acumulada del rango
+//    Recibe el objeto `summary` directamente desde main.js (ya no hace fetch).
+//    Esto evita una llamada extra a la API — los datos vienen de getRangeSummary.
+// ──────────────────────────────────────────────────────────────────────────────
+export function initPieChart(summary) {
     const ctx = document.getElementById('pastel').getContext('2d');
 
     const config = {
@@ -78,7 +79,7 @@ export async function initPieChart(date) {
         data: {
             labels: ['Dólares', 'Efectivo', 'Tarjeta'],
             datasets: [{
-                data: [data.dolaresEfectivo, data.totalEfectivo, data.tarjeta],
+                data: [summary.dolaresEfectivo, summary.totalEfectivo, summary.tarjeta],
                 backgroundColor: [
                     CHART_COLORS.dolares.bg,
                     CHART_COLORS.efectivo.bg,
@@ -104,8 +105,6 @@ export async function initPieChart(date) {
 
     if (pieChart) pieChart.destroy();
     pieChart = new Chart(ctx, config);
-
-    return data; // El controlador usa estos datos para enviarlos al análisis GPT
 }
 
 // ─────────────────────────────────────────────

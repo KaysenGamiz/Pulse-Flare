@@ -146,7 +146,7 @@ router.get('/chart-data', (req, res) => {
                 const turno  = hora < 18 ? 'Matutino' : 'Vespertino';
 
                 const sistema  = corte.totalSistema  || 0;
-                const efectivo = corte.totalEfectivo || 0;
+                const efectivo = (corte.totalEfectivo || 0) + (corte.retiroEnEfectivo || 0);
                 const tarjeta  = corte.tarjeta        || 0;
 
                 // Total diario
@@ -221,7 +221,7 @@ router.get('/range-summary', (req, res) => {
                     _id: null,
                     // Cards
                     totalSistema:  { $sum: '$totalSistema' },
-                    totalEfectivo: { $sum: '$totalEfectivo' },
+                    totalEfectivo: { $sum: { $add: ['$totalEfectivo', '$retiroEnEfectivo'] } },
                     tarjeta:       { $sum: '$tarjeta' },
                     totalCortes:   { $sum: 1 },          // conteo para ticket promedio
                     // Pastel

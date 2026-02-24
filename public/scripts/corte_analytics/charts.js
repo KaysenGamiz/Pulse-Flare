@@ -1,15 +1,19 @@
+/**
+ * Módulo de gráficas para Pulse-Flare
+ * Gestiona: Líneas (Acumulados), Pastel (Distribución), Barras (Semana)
+ */
+
 import { API } from './api.js';
 import { CHART_COLORS, globalOptions } from './chartsConfig.js';
 import { formatCurrency } from './utils.js';
-import { getDateFromWeek, getCurrentWeekString } from './utils.js';
+import { getDateFromWeek } from './utils.js';
 
-// --- REFERENCIAS GLOBALES ---
+// --- INSTANCIAS GLOBALES ---
 let lineChart, pieChart, barChart;
-let selectedWeeks = []; // Guardará strings tipo "2023-W42"
 
-/**
- * 1. GRÁFICA DE LÍNEAS (Acumulados)
- */
+// ─────────────────────────────────────────────
+// 1. GRÁFICA DE LÍNEAS — Acumulados por rango
+// ─────────────────────────────────────────────
 export async function initLineChart(start, end) {
     const data = await API.getLineData(start, end);
     const ctx = document.getElementById('acumulados').getContext('2d');
@@ -34,7 +38,7 @@ export async function initLineChart(start, end) {
                     borderColor: CHART_COLORS.matutino.border,
                     backgroundColor: 'transparent',
                     borderWidth: 2,
-                    borderDash: [5, 5], // Línea punteada para diferenciar
+                    borderDash: [5, 5],
                     tension: 0.3
                 },
                 {
@@ -50,7 +54,7 @@ export async function initLineChart(start, end) {
         options: {
             ...globalOptions,
             scales: {
-                y: { 
+                y: {
                     beginAtZero: true,
                     ticks: { callback: (value) => formatCurrency(value) }
                 }
@@ -62,9 +66,9 @@ export async function initLineChart(start, end) {
     lineChart = new Chart(ctx, config);
 }
 
-/**
- * 2. GRÁFICA DE PASTEL (Distribución)
- */
+// ─────────────────────────────────────────────
+// 2. GRÁFICA DE PASTEL — Distribución de pagos
+// ─────────────────────────────────────────────
 export async function initPieChart(date) {
     const data = await API.getPastelData(date);
     const ctx = document.getElementById('pastel').getContext('2d');
@@ -100,14 +104,13 @@ export async function initPieChart(date) {
 
     if (pieChart) pieChart.destroy();
     pieChart = new Chart(ctx, config);
-    
-    // Devolvemos los datos para que el controlador pueda enviarlos a GPT
-    return data;
+
+    return data; // El controlador usa estos datos para enviarlos al análisis GPT
 }
 
-/**
- * 3. GRÁFICA DE BARRAS (Venta por día)
- */
+// ─────────────────────────────────────────────
+// 3. GRÁFICA DE BARRAS — Ventas de una semana
+// ─────────────────────────────────────────────
 export async function initBarChart(date) {
     const data = await API.getBarData(date);
     const ctx = document.getElementById('barChartWeek').getContext('2d');
@@ -122,7 +125,7 @@ export async function initBarChart(date) {
                 backgroundColor: CHART_COLORS.semana.bg,
                 borderColor: CHART_COLORS.semana.border,
                 borderWidth: 1,
-                borderRadius: 5 // Barras redondeadas modernas
+                borderRadius: 5
             }]
         },
         options: {
@@ -137,38 +140,33 @@ export async function initBarChart(date) {
     barChart = new Chart(ctx, config);
 }
 
-export async function updateComparisonChart(weeksToCompare) { // <--- Agregamos el parámetro
+// ─────────────────────────────────────────────
+// 4. GRÁFICA COMPARATIVA — Múltiples semanas
+// ─────────────────────────────────────────────
+export async function updateComparisonChart(weeksToCompare) {
     const ctx = document.getElementById('barChartWeek').getContext('2d');
-    
-    // Cambia selectedWeeks por weeksToCompare en toda la función
-    const promises = weeksToCompare.map(week => {
-        const monday = getDateFromWeek(week);
-        return API.getBarData(monday);
-    });
+    const COLORS = ['#3498db', '#e67e22', '#2ecc71', '#9b59b6'];
 
-    const allWeeksData = await Promise.all(promises);
+    const allWeeksData = await Promise.all(
+        weeksToCompare.map(week => API.getBarData(getDateFromWeek(week)))
+    );
 
-    const datasets = allWeeksData.map((data, index) => {
-        const weekLabel = weeksToCompare[index]; // <--- Usar parámetro
-        const colors = ['#3498db', '#e67e22', '#2ecc71', '#9b59b6'];
-        
-        return {
-            label: `Semana ${weekLabel}`,
-            data: data.map(d => d.totalSistemaSum),
-            borderColor: colors[index],
-            backgroundColor: 'transparent',
-            borderWidth: 3,
-            tension: 0.3
-        };
-    });
+    const datasets = allWeeksData.map((data, index) => ({
+        label: `Semana ${weeksToCompare[index]}`,
+        data: data.map(d => d.totalSistemaSum),
+        borderColor: COLORS[index],
+        backgroundColor: 'transparent',
+        borderWidth: 3,
+        tension: 0.3
+    }));
 
     if (barChart) barChart.destroy();
-    
+
     barChart = new Chart(ctx, {
         type: 'line',
         data: {
             labels: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'],
-            datasets: datasets
+            datasets
         },
         options: {
             ...globalOptions,
@@ -179,4 +177,3 @@ export async function updateComparisonChart(weeksToCompare) { // <--- Agregamos 
         }
     });
 }
-

@@ -2,7 +2,7 @@
  * Configuración visual y paleta de colores para Chart.js
  */
 
-// 1. Definición de colores constantes (Identidad visual)
+// 1. Paleta de colores (Identidad visual Pulse-Flare)
 export const CHART_COLORS = {
     total: {
         border: '#2c3e50',
@@ -34,7 +34,7 @@ export const CHART_COLORS = {
     }
 };
 
-// 2. Configuración global de Chart.js (Fuentes y Tooltips)
+// 2. Opciones globales de Chart.js (fuentes, tooltips)
 export const globalOptions = {
     responsive: true,
     maintainAspectRatio: false,
@@ -64,9 +64,7 @@ export const globalOptions = {
     }
 };
 
-/**
- * Helper para crear sombras en las líneas (Efecto Moderno)
- */
+// 3. Plugin para sombras en líneas (efecto moderno)
 export const lineShadowPlugin = {
     id: 'lineShadow',
     beforeDraw: (chart) => {

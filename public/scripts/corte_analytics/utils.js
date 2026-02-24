@@ -24,7 +24,7 @@ export function getCurrentMonthRange() {
     const now = new Date();
     const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
     const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-    
+
     return {
         start: formatDate(firstDay),
         end: formatDate(lastDay),
@@ -39,29 +39,23 @@ export function getDayName(dateString) {
     return days[d.getDay()];
 }
 
-/**
- * Convierte un string de semana (2023-W42) al primer día de esa semana (YYYY-MM-DD)
- */
+// 5. Convierte un string de semana (2023-W42) al primer día de esa semana (YYYY-MM-DD)
 export function getDateFromWeek(weekString) {
     if (!weekString) return null;
     const [year, week] = weekString.split('-W');
-    // Crear una fecha el 1 de enero de ese año
     const simple = new Date(year, 0, 1 + (week - 1) * 7);
     const dayOfWeek = simple.getDay();
     const ISOweekStart = simple;
-    
-    // Ajustar al lunes de esa semana
+
     if (dayOfWeek <= 4) {
         ISOweekStart.setDate(simple.getDate() - simple.getDay() + 1);
     } else {
         ISOweekStart.setDate(simple.getDate() + 8 - simple.getDay());
     }
-    return formatDate(ISOweekStart); // Usamos tu función formatDate existente
+    return formatDate(ISOweekStart);
 }
 
-/**
- * Obtiene el string de la semana actual para el input (YYYY-Www)
- */
+// 6. Obtiene el string de la semana actual para el input (YYYY-Www)
 export function getCurrentWeekString() {
     const d = new Date();
     d.setHours(0, 0, 0, 0);

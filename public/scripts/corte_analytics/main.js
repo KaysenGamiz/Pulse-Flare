@@ -1,7 +1,8 @@
 /**
  * Controlador Principal — Pulse-Flare
- * Un solo filtro de rango controla: cards, líneas, pastel y análisis GPT.
- * El dropdown de métrica cambia la gráfica de líneas sin volver al servidor.
+ * - Un solo filtro de rango controla: cards, líneas, pastel y análisis GPT.
+ * - Clicar una summary card filtra la gráfica de líneas (igual que el dropdown).
+ * - El dropdown y las cards se sincronizan entre sí.
  */
 
 import { API } from './api.js';
@@ -12,8 +13,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // ── Fechas y estado ───────────────────────────────────────────────────
     const { start, end } = getCurrentMonthRange();
-    let selectedWeeks  = [];
-    let currentMetric  = 'sistema'; // métrica activa en la gráfica de líneas
+    let selectedWeeks = [];
+    let currentMetric = 'sistema';
 
     // ── Referencias al DOM ────────────────────────────────────────────────
     const lineStartInput    = document.getElementById('lineChartStartDate');
@@ -28,7 +29,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const btnResetWeeks  = document.getElementById('btnResetWeeks');
 
     const metricDropdownLabel = document.getElementById('metricDropdownLabel');
+    const metricDropdownIcon  = document.getElementById('metricDropdownIcon');
     const metricOptions       = document.querySelectorAll('.metric-option');
+    const clickableCards      = document.querySelectorAll('.summary-card--clickable');
 
     // ── Valores iniciales ─────────────────────────────────────────────────
     lineStartInput.value = start;
@@ -39,12 +42,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     async function loadRangeData(start, end) {
         showCardsLoading();
-
         const [summary] = await Promise.all([
             API.getRangeSummary(start, end),
             initLineChart(start, end, currentMetric)
         ]);
-
         updateSummaryCards(summary, start, end);
         initPieChart(summary);
         loadAnalysis(summary, start, end);
@@ -57,11 +58,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function updateSummaryCards(summary, start, end) {
-        document.getElementById('summaryTotalSistema').textContent    = formatCurrency(summary.totalSistema);
-        document.getElementById('summaryTotalEfectivo').textContent   = formatCurrency(summary.totalEfectivo);
-        document.getElementById('summaryTarjeta').textContent         = formatCurrency(summary.tarjeta);
-        document.getElementById('summaryTicketPromedio').textContent  = formatCurrency(summary.ticketPromedio);
-        document.getElementById('summaryRange').textContent           = `${start} · ${end}`;
+        document.getElementById('summaryTotalSistema').textContent   = formatCurrency(summary.totalSistema);
+        document.getElementById('summaryTotalEfectivo').textContent  = formatCurrency(summary.totalEfectivo);
+        document.getElementById('summaryTarjeta').textContent        = formatCurrency(summary.tarjeta);
+        document.getElementById('summaryTicketPromedio').textContent = formatCurrency(summary.ticketPromedio);
+        document.getElementById('summaryRange').textContent          = `${start} · ${end}`;
         document.getElementById('summaryLoading').classList.add('d-none');
     }
 
@@ -74,8 +75,30 @@ document.addEventListener('DOMContentLoaded', async () => {
             DateStart: start,
             DateEnd:   end
         })
-        .then(result => { analysisContainer.innerHTML = result.analysis; })
+        .then(result  => { analysisContainer.innerHTML = result.analysis; })
         .catch(() => { analysisContainer.innerHTML = '<span class="text-danger">Error al cargar el análisis.</span>'; });
+    }
+
+    /**
+     * Cambia la métrica activa — actualiza gráfica, dropdown y cards.
+     * Punto único de cambio: tanto el dropdown como las cards lo llaman.
+     */
+    function setActiveMetric(metric) {
+        currentMetric = metric;
+        const m = LINE_METRICS[metric];
+
+        // Actualiza el dropdown
+        metricDropdownLabel.textContent = m.label;
+        metricDropdownIcon.className    = `fas ${m.icon} me-1`;
+        metricOptions.forEach(b => b.classList.toggle('active', b.dataset.metric === metric));
+
+        // Actualiza el estado visual de las cards
+        clickableCards.forEach(card => {
+            card.classList.toggle('summary-card--active', card.dataset.metric === metric);
+        });
+
+        // Redibuja la gráfica sin llamar al servidor
+        switchLineMetric(metric);
     }
 
     function renderWeekBadges() {
@@ -99,25 +122,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         loadRangeData(start, end);
     });
 
-    // Dropdown de métrica — cambia la gráfica sin llamar al servidor
+    // Cards clicables → cambian la métrica
+    clickableCards.forEach(card => {
+        card.addEventListener('click', () => setActiveMetric(card.dataset.metric));
+    });
+
+    // Dropdown → también usa setActiveMetric para mantenerse en sync con las cards
     metricOptions.forEach(btn => {
-        btn.addEventListener('click', () => {
-            currentMetric = btn.dataset.metric;
-            metricDropdownLabel.textContent = LINE_METRICS[currentMetric].label;
-
-            // Marca la opción activa visualmente
-            metricOptions.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-
-            switchLineMetric(currentMetric);
-        });
+        btn.addEventListener('click', () => setActiveMetric(btn.dataset.metric));
     });
 
     btnAddWeek.addEventListener('click', () => {
         const week = weekInput.value;
         if (!week || selectedWeeks.includes(week)) return;
         if (selectedWeeks.length >= 4) return alert('Máximo 4 semanas para comparar');
-
         selectedWeeks.push(week);
         renderWeekBadges();
         updateComparisonChart(selectedWeeks);

@@ -15,22 +15,28 @@ let lineChartData = null; // Guarda la última respuesta del backend para cambia
 // Mapa de métricas disponibles para la gráfica de líneas
 export const LINE_METRICS = {
     sistema: {
-        label:     'Total Sistema',
-        total:     'sistema',
-        matutino:  'sistemaMatutino',
-        vespertino:'sistemaVespertino',
+        label:      'Total Sistema',
+        icon:       'fa-chart-line',
+        iconClass:  'text-dark',
+        total:      'sistema',
+        matutino:   'sistemaMatutino',
+        vespertino: 'sistemaVespertino',
     },
     efectivo: {
-        label:     'Total Efectivo',
-        total:     'efectivo',
-        matutino:  'efectivoMatutino',
-        vespertino:'efectivoVespertino',
+        label:      'Total Efectivo',
+        icon:       'fa-money-bill-wave',
+        iconClass:  'text-primary',
+        total:      'efectivo',
+        matutino:   'efectivoMatutino',
+        vespertino: 'efectivoVespertino',
     },
     tarjeta: {
-        label:     'Tarjeta',
-        total:     'tarjeta',
-        matutino:  'tarjetaMatutino',
-        vespertino:'tarjetaVespertino',
+        label:      'Tarjeta',
+        icon:       'fa-credit-card',
+        iconClass:  'text-warning',
+        total:      'tarjeta',
+        matutino:   'tarjetaMatutino',
+        vespertino: 'tarjetaVespertino',
     },
 };
 
@@ -45,7 +51,6 @@ export async function initLineChart(start, end, metric = 'sistema') {
 
 /**
  * Cambia la métrica mostrada sin volver a llamar al backend.
- * Llamado desde el dropdown en main.js.
  */
 export function switchLineMetric(metric) {
     if (!lineChartData) return;
@@ -69,7 +74,8 @@ function _renderLineChart(metric) {
                     backgroundColor: CHART_COLORS.total.bg,
                     borderWidth: 3,
                     fill: true,
-                    tension: 0.3
+                    tension: 0.3,
+                    spanGaps: false, // null = sin dato ese día, no conectar puntos
                 },
                 {
                     label:           'Matutino',
@@ -78,7 +84,8 @@ function _renderLineChart(metric) {
                     backgroundColor: 'transparent',
                     borderWidth: 2,
                     borderDash: [5, 5],
-                    tension: 0.3
+                    tension: 0.3,
+                    spanGaps: false,
                 },
                 {
                     label:           'Vespertino',
@@ -86,7 +93,8 @@ function _renderLineChart(metric) {
                     borderColor:     CHART_COLORS.vespertino.border,
                     backgroundColor: 'transparent',
                     borderWidth: 2,
-                    tension: 0.3
+                    tension: 0.3,
+                    spanGaps: false,
                 }
             ]
         },

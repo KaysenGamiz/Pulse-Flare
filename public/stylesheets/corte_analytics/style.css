@@ -11,9 +11,7 @@
    1. LAYOUT GENERAL
    ============================================================================= */
 
-.page-header {
-  margin-bottom: 2rem;
-}
+.page-header { margin-bottom: 2rem; }
 
 .page-title {
   font-size: 1.6rem;
@@ -56,10 +54,7 @@
   white-space: nowrap;
 }
 
-.filter-bar__label i {
-  font-size: 0.85rem;
-  color: #000;
-}
+.filter-bar__label i { font-size: 0.85rem; color: #000; }
 
 .filter-bar__divider {
   width: 1px;
@@ -68,17 +63,9 @@
   flex-shrink: 0;
 }
 
-.filter-bar__fields {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
+.filter-bar__fields { display: flex; align-items: center; gap: 10px; }
 
-.filter-field {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
+.filter-field { display: flex; flex-direction: column; gap: 2px; }
 
 .filter-field label {
   margin: 0;
@@ -109,17 +96,12 @@
 }
 
 .filter-bar__arrow {
-  padding-top: 16px; /* compensa la altura del label */
+  padding-top: 16px;
   font-size: 0.75rem;
   color: #cbd5e1;
 }
 
-.filter-bar__actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-left: auto;
-}
+.filter-bar__actions { display: flex; align-items: center; gap: 8px; margin-left: auto; }
 
 .filter-btn {
   display: inline-flex;
@@ -163,22 +145,53 @@
 }
 
 .summary-card {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 16px;
   padding: 18px 20px;
   background: #fff;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #d2d2d2;
   border-radius: 12px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, .05);
-  transition: box-shadow .2s, transform .2s;
+  transition: box-shadow .2s, transform .2s, border-color .2s;
+  overflow: hidden; /* contiene el indicador inferior */
 }
 
-.summary-card:hover {
+/* Cards clicables */
+.summary-card--clickable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.summary-card--clickable:hover {
   box-shadow: 0 4px 16px rgba(0, 0, 0, .09);
   transform: translateY(-1px);
 }
 
+.summary-card--clickable:active { transform: scale(.98); }
+
+/* Estado activo — borde resaltado + línea inferior */
+.summary-card--active {
+  border-color: #1e293b;
+  box-shadow: 0 4px 14px rgba(30, 41, 59, .12);
+}
+
+/* Indicador: línea en la parte inferior de la card activa */
+.summary-card__indicator {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: transparent;
+  border-radius: 0 0 12px 12px;
+  transition: background .2s;
+}
+
+.summary-card--active .summary-card__indicator { background: #1e293b; }
+
+/* Ícono */
 .summary-card__icon {
   display: flex;
   align-items: center;
@@ -196,12 +209,8 @@
 .summary-card__icon--tarjeta  { background: #ffc107; color: #1e293b !important; }
 .summary-card__icon--ticket   { background: #6c5ce7; }
 
-.summary-card__body {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  min-width: 0;
-}
+/* Cuerpo */
+.summary-card__body { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
 
 .summary-card__label {
   font-size: 0.7rem;
@@ -252,11 +261,6 @@
   margin: 0;
 }
 
-/*
-  card-chart: hace que la card se estire con flexbox para igualar alturas.
-  card-body dentro de ella usa flex: 1 para ocupar el espacio restante
-  después del card-header, así ambas cards (líneas y pastel) quedan iguales.
-*/
 .card-chart {
   display: flex;
   flex-direction: column;
@@ -264,19 +268,15 @@
 
 .card-chart .card-body {
   flex: 1;
-  min-height: 350px; /* altura mínima si la fila es pequeña */
+  min-height: 350px;
 }
 
-/* chart-body: contiene el canvas con position relative para Chart.js */
 .chart-body {
   position: relative;
   height: 100%;
 }
 
-/* Para cards que NO son card-chart (comparativa, análisis) */
-.card:not(.card-chart) .chart-body {
-  height: 350px;
-}
+.card:not(.card-chart) .chart-body { height: 350px; }
 
 
 /* =============================================================================

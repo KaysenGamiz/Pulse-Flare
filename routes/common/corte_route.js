@@ -167,21 +167,22 @@ router.get('/chart-data', (req, res) => {
             });
 
             const labels = Array.from(maps.sistema.keys());
+            const align  = (map) => labels.map(d => map.get(d) ?? null);
 
             res.status(HTTP.OK).json({
                 labels,
                 // Total Sistema
-                sistema:            Array.from(maps.sistema.values()),
-                sistemaMatutino:    Array.from(maps.sistemaMatutino.values()),
-                sistemaVespertino:  Array.from(maps.sistemaVespertino.values()),
+                sistema:            align(maps.sistema),
+                sistemaMatutino:    align(maps.sistemaMatutino),
+                sistemaVespertino:  align(maps.sistemaVespertino),
                 // Total Efectivo
-                efectivo:           Array.from(maps.efectivo.values()),
-                efectivoMatutino:   Array.from(maps.efectivoMatutino.values()),
-                efectivoVespertino: Array.from(maps.efectivoVespertino.values()),
+                efectivo:           align(maps.efectivo),
+                efectivoMatutino:   align(maps.efectivoMatutino),
+                efectivoVespertino: align(maps.efectivoVespertino),
                 // Tarjeta
-                tarjeta:            Array.from(maps.tarjeta.values()),
-                tarjetaMatutino:    Array.from(maps.tarjetaMatutino.values()),
-                tarjetaVespertino:  Array.from(maps.tarjetaVespertino.values()),
+                tarjeta:            align(maps.tarjeta),
+                tarjetaMatutino:    align(maps.tarjetaMatutino),
+                tarjetaVespertino:  align(maps.tarjetaVespertino),
             });
         })
         .catch((error) => {
@@ -275,7 +276,7 @@ router.get('/range-summary', (req, res) => {
     }
 });
 
-// GET Accumulated Data by Day for a Month
+// GET Accumulated Data by Day for a Week
 router.get('/daily-accumulated', (req, res) => {
     const { date } = req.query;
 
@@ -284,41 +285,50 @@ router.get('/daily-accumulated', (req, res) => {
             return res.status(HTTP.BAD_REQUEST).json({ error: 'El parámetro "date" es requerido en formato YYYY-MM-DD.' });
         }
 
-        const fechaInicio = moment.tz(date, 'America/Los_Angeles').startOf('isoWeek').toDate();
-        const fechaFin = moment.tz(date, 'America/Los_Angeles').endOf('isoWeek').toDate();
-        
+        const fechaInicio = moment.tz(date, 'YYYY-MM-DD', 'America/Los_Angeles').startOf('isoWeek').toDate();
+        const fechaFin    = moment.tz(date, 'YYYY-MM-DD', 'America/Los_Angeles').endOf('isoWeek').toDate();
+
         Corte.aggregate([
             {
                 $match: {
-                    fechaHora: { $gte: fechaInicio, $lte: fechaFin } // Filtrar por el mes seleccionado
+                    fechaHora: { $gte: fechaInicio, $lte: fechaFin } // Filtrar por la semana seleccionada
                 }
             },
             {
                 $group: {
-                    _id: { dayOfWeek: { $dayOfWeek: '$fechaHora' } }, // Agrupar por día de la semana
-                    totalSistemaSum: { $sum: '$totalSistema' } // Sumar los valores de totalSistema
+                    _id: {
+                        dayOfWeek: {
+                            $dayOfWeek: {
+                                date:     '$fechaHora',
+                                timezone: 'America/Los_Angeles' // Evita desfase UTC vs hora local
+                            }
+                        }
+                    },
+                    totalSistemaSum: { $sum: '$totalSistema' }
                 }
             },
             {
-                $sort: { '_id.dayOfWeek': 1 } // Ordenar por día de la semana (Domingo = 1, Sábado = 7)
+                $sort: { '_id.dayOfWeek': 1 } // Domingo = 1, Sábado = 7
             },
             {
                 $project: {
                     _id: 0,
-                    dayOfWeek: '$_id.dayOfWeek', // Índice del día de la semana
-                    totalSistemaSum: 1 // Mantener la suma
+                    dayOfWeek:      '$_id.dayOfWeek',
+                    totalSistemaSum: 1
                 }
             }
         ])
         .then((result) => {
             const adjustedDayNames = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
-            
-            // Crear un array de 7 días con valor 0 por defecto
+
+            // Array de 7 días con valor 0 por defecto
             const finalData = adjustedDayNames.map(name => ({ dayName: name, totalSistemaSum: 0 }));
 
-            // Llenar con los datos reales encontrados en la DB
+            // Llenar con los datos reales
+            // MongoDB: Domingo=1, Lunes=2 ... Sábado=7
+            // Nuestro array: Lunes=0 ... Domingo=6
             result.forEach(item => {
-                const adjustedIndex = item.dayOfWeek === 1 ? 6 : item.dayOfWeek - 2; 
+                const adjustedIndex = item.dayOfWeek === 1 ? 6 : item.dayOfWeek - 2;
                 if (finalData[adjustedIndex]) {
                     finalData[adjustedIndex].totalSistemaSum = item.totalSistemaSum;
                 }
@@ -330,11 +340,11 @@ router.get('/daily-accumulated', (req, res) => {
             console.error(error);
             res.status(HTTP.INTERNAL_SERVER_ERROR).json({ error: 'Error al obtener los datos acumulados por día de la semana' });
         });
+
     } catch (error) {
         return res.status(HTTP.BAD_REQUEST).json({ error: 'Formato de fecha inválido. Utiliza el formato YYYY-MM-DD.' });
     }
 });
-
 
 
 router.get('/rcc-validation', async (req, res) => {

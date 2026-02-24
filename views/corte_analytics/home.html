@@ -151,13 +151,42 @@
         </div>
       </div>
 
-      <!-- ── GRÁFICA DE LÍNEAS ──────────────────────────────────────────── -->
-      <div class="col-lg-8">
-        <div class="card shadow-sm">
-          <div class="card-header">
-            <h2 class="chart-title">
+      <!-- ── GRÁFICAS: LÍNEAS + PASTEL (misma altura) ───────────────────── -->
+      <!--
+        Clave: ambos col usan d-flex, y la card usa h-100 + card-chart.
+        card-chart hace que card-body ocupe el espacio restante con flex,
+        así ambas cards igualan su altura a la más alta de la fila.
+      -->
+      <div class="col-lg-8 d-flex">
+        <div class="card shadow-sm h-100 card-chart w-100">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h2 class="chart-title mb-0">
               <i class="fas fa-chart-line me-2"></i>Acumulados
             </h2>
+            <div class="dropdown">
+              <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button"
+                      id="metricDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-chart-line me-1"></i>
+                <span id="metricDropdownLabel">Total Sistema</span>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="metricDropdown">
+                <li>
+                  <button class="dropdown-item metric-option" data-metric="sistema">
+                    <i class="fas fa-chart-line me-2 text-dark"></i>Total Sistema
+                  </button>
+                </li>
+                <li>
+                  <button class="dropdown-item metric-option" data-metric="efectivo">
+                    <i class="fas fa-money-bill-wave me-2 text-primary"></i>Total Efectivo
+                  </button>
+                </li>
+                <li>
+                  <button class="dropdown-item metric-option" data-metric="tarjeta">
+                    <i class="fas fa-credit-card me-2 text-warning"></i>Tarjeta
+                  </button>
+                </li>
+              </ul>
+            </div>
           </div>
           <div class="card-body chart-body">
             <canvas id="acumulados"></canvas>
@@ -165,13 +194,14 @@
         </div>
       </div>
 
-      <!-- ── GRÁFICA DE PASTEL ──────────────────────────────────────────── -->
-      <div class="col-lg-4">
-        <div class="card shadow-sm">
-          <div class="card-header">
-            <h2 class="chart-title">
+      <div class="col-lg-4 d-flex">
+        <div class="card shadow-sm h-100 card-chart w-100">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h2 class="chart-title mb-0">
               <i class="fas fa-chart-pie me-2"></i>Distribución de Pagos
             </h2>
+            <!-- Placeholder para igualar altura con el header de Acumulados -->
+            <div style="height: 31px;"></div>
           </div>
           <div class="card-body chart-body">
             <canvas id="pastel"></canvas>

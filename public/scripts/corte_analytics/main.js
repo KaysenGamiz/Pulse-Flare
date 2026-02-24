@@ -1,18 +1,19 @@
 /**
  * Controlador Principal — Pulse-Flare
  * Un solo filtro de rango controla: cards, líneas, pastel y análisis GPT.
- * Una sola llamada (getRangeSummary) alimenta las 4 cards, el pastel y el análisis.
+ * El dropdown de métrica cambia la gráfica de líneas sin volver al servidor.
  */
 
 import { API } from './api.js';
-import { initLineChart, initPieChart, initBarChart, updateComparisonChart } from './charts.js';
+import { initLineChart, initPieChart, initBarChart, updateComparisonChart, switchLineMetric, LINE_METRICS } from './charts.js';
 import { getCurrentMonthRange, getDateFromWeek, getCurrentWeekString, formatCurrency } from './utils.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
 
-    // ── Fechas iniciales ──────────────────────────────────────────────────
+    // ── Fechas y estado ───────────────────────────────────────────────────
     const { start, end } = getCurrentMonthRange();
-    let selectedWeeks = [];
+    let selectedWeeks  = [];
+    let currentMetric  = 'sistema'; // métrica activa en la gráfica de líneas
 
     // ── Referencias al DOM ────────────────────────────────────────────────
     const lineStartInput    = document.getElementById('lineChartStartDate');
@@ -26,24 +27,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     const btnAddWeek     = document.getElementById('btnAddWeek');
     const btnResetWeeks  = document.getElementById('btnResetWeeks');
 
-    // ── Valores iniciales de los inputs ───────────────────────────────────
+    const metricDropdownLabel = document.getElementById('metricDropdownLabel');
+    const metricOptions       = document.querySelectorAll('.metric-option');
+
+    // ── Valores iniciales ─────────────────────────────────────────────────
     lineStartInput.value = start;
     lineEndInput.value   = end;
     weekInput.value      = getCurrentWeekString();
 
     // ── Funciones ─────────────────────────────────────────────────────────
 
-    /**
-     * Punto de entrada único para el filtro de rango.
-     * getRangeSummary se llama UNA vez y alimenta: 4 cards + pastel + análisis GPT.
-     * La gráfica de líneas corre en paralelo (datos distintos).
-     */
     async function loadRangeData(start, end) {
         showCardsLoading();
 
         const [summary] = await Promise.all([
             API.getRangeSummary(start, end),
-            initLineChart(start, end)
+            initLineChart(start, end, currentMetric)
         ]);
 
         updateSummaryCards(summary, start, end);
@@ -52,19 +51,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function showCardsLoading() {
-        document.getElementById('summaryTotalSistema').textContent  = '—';
-        document.getElementById('summaryTotalEfectivo').textContent = '—';
-        document.getElementById('summaryTarjeta').textContent       = '—';
-        document.getElementById('summaryTicketPromedio').textContent = '—';
+        ['summaryTotalSistema', 'summaryTotalEfectivo', 'summaryTarjeta', 'summaryTicketPromedio']
+            .forEach(id => document.getElementById(id).textContent = '—');
         document.getElementById('summaryLoading').classList.remove('d-none');
     }
 
     function updateSummaryCards(summary, start, end) {
-        document.getElementById('summaryTotalSistema').textContent   = formatCurrency(summary.totalSistema);
-        document.getElementById('summaryTotalEfectivo').textContent  = formatCurrency(summary.totalEfectivo);
-        document.getElementById('summaryTarjeta').textContent        = formatCurrency(summary.tarjeta);
-        document.getElementById('summaryTicketPromedio').textContent = formatCurrency(summary.ticketPromedio);
-        document.getElementById('summaryRange').textContent          = `${start} · ${end}`;
+        document.getElementById('summaryTotalSistema').textContent    = formatCurrency(summary.totalSistema);
+        document.getElementById('summaryTotalEfectivo').textContent   = formatCurrency(summary.totalEfectivo);
+        document.getElementById('summaryTarjeta').textContent         = formatCurrency(summary.tarjeta);
+        document.getElementById('summaryTicketPromedio').textContent  = formatCurrency(summary.ticketPromedio);
+        document.getElementById('summaryRange').textContent           = `${start} · ${end}`;
         document.getElementById('summaryLoading').classList.add('d-none');
     }
 
@@ -77,12 +74,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             DateStart: start,
             DateEnd:   end
         })
-        .then(result => {
-            analysisContainer.innerHTML = result.analysis;
-        })
-        .catch(() => {
-            analysisContainer.innerHTML = '<span class="text-danger">Error al cargar el análisis.</span>';
-        });
+        .then(result => { analysisContainer.innerHTML = result.analysis; })
+        .catch(() => { analysisContainer.innerHTML = '<span class="text-danger">Error al cargar el análisis.</span>'; });
     }
 
     function renderWeekBadges() {
@@ -104,6 +97,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         lineStartInput.value = start;
         lineEndInput.value   = end;
         loadRangeData(start, end);
+    });
+
+    // Dropdown de métrica — cambia la gráfica sin llamar al servidor
+    metricOptions.forEach(btn => {
+        btn.addEventListener('click', () => {
+            currentMetric = btn.dataset.metric;
+            metricDropdownLabel.textContent = LINE_METRICS[currentMetric].label;
+
+            // Marca la opción activa visualmente
+            metricOptions.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            switchLineMetric(currentMetric);
+        });
     });
 
     btnAddWeek.addEventListener('click', () => {

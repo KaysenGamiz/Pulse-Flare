@@ -8,15 +8,54 @@ import { CHART_COLORS, globalOptions } from './chartsConfig.js';
 import { formatCurrency } from './utils.js';
 import { getDateFromWeek } from './utils.js';
 
-// --- INSTANCIAS GLOBALES ---
+// --- INSTANCIAS Y ESTADO GLOBAL ---
 let lineChart, pieChart, barChart;
+let lineChartData = null; // Guarda la última respuesta del backend para cambiar métrica sin refetch
 
-// ─────────────────────────────────────────────
+// Mapa de métricas disponibles para la gráfica de líneas
+export const LINE_METRICS = {
+    sistema: {
+        label:     'Total Sistema',
+        total:     'sistema',
+        matutino:  'sistemaMatutino',
+        vespertino:'sistemaVespertino',
+    },
+    efectivo: {
+        label:     'Total Efectivo',
+        total:     'efectivo',
+        matutino:  'efectivoMatutino',
+        vespertino:'efectivoVespertino',
+    },
+    tarjeta: {
+        label:     'Tarjeta',
+        total:     'tarjeta',
+        matutino:  'tarjetaMatutino',
+        vespertino:'tarjetaVespertino',
+    },
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
 // 1. GRÁFICA DE LÍNEAS — Acumulados por rango
-// ─────────────────────────────────────────────
-export async function initLineChart(start, end) {
-    const data = await API.getLineData(start, end);
-    const ctx = document.getElementById('acumulados').getContext('2d');
+//    metric: clave de LINE_METRICS ('sistema' | 'efectivo' | 'tarjeta')
+// ─────────────────────────────────────────────────────────────────────────────
+export async function initLineChart(start, end, metric = 'sistema') {
+    lineChartData = await API.getLineData(start, end);
+    _renderLineChart(metric);
+}
+
+/**
+ * Cambia la métrica mostrada sin volver a llamar al backend.
+ * Llamado desde el dropdown en main.js.
+ */
+export function switchLineMetric(metric) {
+    if (!lineChartData) return;
+    _renderLineChart(metric);
+}
+
+function _renderLineChart(metric) {
+    const ctx  = document.getElementById('acumulados').getContext('2d');
+    const keys = LINE_METRICS[metric];
+    const data = lineChartData;
 
     const config = {
         type: 'line',
@@ -24,27 +63,27 @@ export async function initLineChart(start, end) {
             labels: data.labels,
             datasets: [
                 {
-                    label: 'Total Sistema',
-                    data: data.data,
-                    borderColor: CHART_COLORS.total.border,
+                    label:           keys.label,
+                    data:            data[keys.total],
+                    borderColor:     CHART_COLORS.total.border,
                     backgroundColor: CHART_COLORS.total.bg,
                     borderWidth: 3,
                     fill: true,
                     tension: 0.3
                 },
                 {
-                    label: 'Matutino',
-                    data: data.matutino,
-                    borderColor: CHART_COLORS.matutino.border,
+                    label:           'Matutino',
+                    data:            data[keys.matutino] || [],
+                    borderColor:     CHART_COLORS.matutino.border,
                     backgroundColor: 'transparent',
                     borderWidth: 2,
                     borderDash: [5, 5],
                     tension: 0.3
                 },
                 {
-                    label: 'Vespertino',
-                    data: data.vespertino,
-                    borderColor: CHART_COLORS.vespertino.border,
+                    label:           'Vespertino',
+                    data:            data[keys.vespertino] || [],
+                    borderColor:     CHART_COLORS.vespertino.border,
                     backgroundColor: 'transparent',
                     borderWidth: 2,
                     tension: 0.3
@@ -68,8 +107,7 @@ export async function initLineChart(start, end) {
 
 // ──────────────────────────────────────────────────────────────────────────────
 // 2. GRÁFICA DE PASTEL — Distribución acumulada del rango
-//    Recibe el objeto `summary` directamente desde main.js (ya no hace fetch).
-//    Esto evita una llamada extra a la API — los datos vienen de getRangeSummary.
+//    Recibe el objeto summary directamente (no hace fetch propio).
 // ──────────────────────────────────────────────────────────────────────────────
 export function initPieChart(summary) {
     const ctx = document.getElementById('pastel').getContext('2d');
@@ -112,17 +150,17 @@ export function initPieChart(summary) {
 // ─────────────────────────────────────────────
 export async function initBarChart(date) {
     const data = await API.getBarData(date);
-    const ctx = document.getElementById('barChartWeek').getContext('2d');
+    const ctx  = document.getElementById('barChartWeek').getContext('2d');
 
     const config = {
         type: 'bar',
         data: {
             labels: data.map(item => item.dayName),
             datasets: [{
-                label: 'Ventas Diarias',
-                data: data.map(item => item.totalSistemaSum),
+                label:           'Ventas Diarias',
+                data:            data.map(item => item.totalSistemaSum),
                 backgroundColor: CHART_COLORS.semana.bg,
-                borderColor: CHART_COLORS.semana.border,
+                borderColor:     CHART_COLORS.semana.border,
                 borderWidth: 1,
                 borderRadius: 5
             }]
@@ -143,7 +181,7 @@ export async function initBarChart(date) {
 // 4. GRÁFICA COMPARATIVA — Múltiples semanas
 // ─────────────────────────────────────────────
 export async function updateComparisonChart(weeksToCompare) {
-    const ctx = document.getElementById('barChartWeek').getContext('2d');
+    const ctx    = document.getElementById('barChartWeek').getContext('2d');
     const COLORS = ['#3498db', '#e67e22', '#2ecc71', '#9b59b6'];
 
     const allWeeksData = await Promise.all(
@@ -151,9 +189,9 @@ export async function updateComparisonChart(weeksToCompare) {
     );
 
     const datasets = allWeeksData.map((data, index) => ({
-        label: `Semana ${weeksToCompare[index]}`,
-        data: data.map(d => d.totalSistemaSum),
-        borderColor: COLORS[index],
+        label:           `Semana ${weeksToCompare[index]}`,
+        data:            data.map(d => d.totalSistemaSum),
+        borderColor:     COLORS[index],
         backgroundColor: 'transparent',
         borderWidth: 3,
         tension: 0.3

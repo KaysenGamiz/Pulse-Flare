@@ -135,9 +135,7 @@
   transition: background .18s, box-shadow .18s, transform .12s;
 }
 
-.filter-btn:active {
-  transform: scale(.97);
-}
+.filter-btn:active { transform: scale(.97); }
 
 .filter-btn--apply {
   background: #1e293b;
@@ -150,15 +148,8 @@
   box-shadow: 0 4px 10px rgba(30, 41, 59, .28);
 }
 
-.filter-btn--reset {
-  background: #f1f5f9;
-  color: #475569;
-}
-
-.filter-btn--reset:hover {
-  background: #e2e8f0;
-  color: #1e293b;
-}
+.filter-btn--reset { background: #f1f5f9; color: #475569; }
+.filter-btn--reset:hover { background: #e2e8f0; color: #1e293b; }
 
 
 /* =============================================================================
@@ -177,7 +168,7 @@
   gap: 16px;
   padding: 18px 20px;
   background: #fff;
-  border: 1px solid #d2d2d2;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, .05);
   transition: box-shadow .2s, transform .2s;
@@ -221,10 +212,7 @@
   white-space: nowrap;
 }
 
-.summary-card__value-row {
-  display: flex;
-  align-items: center;
-}
+.summary-card__value-row { display: flex; align-items: center; }
 
 .summary-card__value {
   font-size: 1.4rem;
@@ -251,7 +239,6 @@
    4. CHARTS
    ============================================================================= */
 
-/* Título de cada card de gráfica */
 .card-header {
   background: #fff;
   border-bottom: 1px solid #e9ecef;
@@ -265,9 +252,29 @@
   margin: 0;
 }
 
-/* Altura uniforme para todos los canvas */
+/*
+  card-chart: hace que la card se estire con flexbox para igualar alturas.
+  card-body dentro de ella usa flex: 1 para ocupar el espacio restante
+  después del card-header, así ambas cards (líneas y pastel) quedan iguales.
+*/
+.card-chart {
+  display: flex;
+  flex-direction: column;
+}
+
+.card-chart .card-body {
+  flex: 1;
+  min-height: 350px; /* altura mínima si la fila es pequeña */
+}
+
+/* chart-body: contiene el canvas con position relative para Chart.js */
 .chart-body {
   position: relative;
+  height: 100%;
+}
+
+/* Para cards que NO son card-chart (comparativa, análisis) */
+.card:not(.card-chart) .chart-body {
   height: 350px;
 }
 

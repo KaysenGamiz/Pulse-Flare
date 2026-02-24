@@ -112,67 +112,83 @@ router.get('/date', (req, res) => {
 });
 
 // GET Chart Data Between Dates
+// Devuelve totalSistema, efectivo y tarjeta — cada uno con desglose por turno (matutino/vespertino)
 router.get('/chart-data', (req, res) => {
     const date1 = req.query.date1;
     const date2 = req.query.date2;
 
     try {
         const fechaInicio = moment.tz(date1, 'America/Los_Angeles').startOf('day').toDate();
-        const fechaFin = moment.tz(date2, 'America/Los_Angeles').endOf('day').toDate();
+        const fechaFin    = moment.tz(date2, 'America/Los_Angeles').endOf('day').toDate();
 
         Corte.find({ fechaHora: { $gte: fechaInicio, $lte: fechaFin } })
         .then((cortes) => {
-            const chartData = new Map();
-            const matutinoData = new Map();
-            const vespertinoData = new Map();
+
+            // Maps para cada métrica: total del día + desglose por turno
+            const maps = {
+                sistema:            new Map(),
+                sistemaMatutino:    new Map(),
+                sistemaVespertino:  new Map(),
+                efectivo:           new Map(),
+                efectivoMatutino:   new Map(),
+                efectivoVespertino: new Map(),
+                tarjeta:            new Map(),
+                tarjetaMatutino:    new Map(),
+                tarjetaVespertino:  new Map(),
+            };
+
+            const add = (map, key, value) =>
+                map.set(key, (map.get(key) || 0) + value);
 
             cortes.forEach((corte) => {
-                const corteFecha = moment.tz(corte.fechaHora, 'America/Los_Angeles');
-                const corteFechaFormatted = corteFecha.format('YYYY-MM-DD');
-                const corteHora = corteFecha.hour();
-                const totalSistema = corte.totalSistema;
+                const fecha  = moment.tz(corte.fechaHora, 'America/Los_Angeles').format('YYYY-MM-DD');
+                const hora   = moment.tz(corte.fechaHora, 'America/Los_Angeles').hour();
+                const turno  = hora < 18 ? 'Matutino' : 'Vespertino';
 
-                if (corteHora < 18) {
-                    // Corte del turno matutino
-                    if (matutinoData.has(corteFechaFormatted)) {
-                        matutinoData.set(corteFechaFormatted, matutinoData.get(corteFechaFormatted) + totalSistema);
-                    } else {
-                        matutinoData.set(corteFechaFormatted, totalSistema);
-                    }
-                } else {
-                // Corte del turno vespertino
-                    if (vespertinoData.has(corteFechaFormatted)) {
-                        vespertinoData.set(corteFechaFormatted, vespertinoData.get(corteFechaFormatted) + totalSistema);
-                    } else {
-                        vespertinoData.set(corteFechaFormatted, totalSistema);
-                    }
-                }
+                const sistema  = corte.totalSistema  || 0;
+                const efectivo = corte.totalEfectivo || 0;
+                const tarjeta  = corte.tarjeta        || 0;
 
-                if (chartData.has(corteFechaFormatted)) {
-                    chartData.set(corteFechaFormatted, chartData.get(corteFechaFormatted) + totalSistema);
+                // Total diario
+                add(maps.sistema,   fecha, sistema);
+                add(maps.efectivo,  fecha, efectivo);
+                add(maps.tarjeta,   fecha, tarjeta);
+
+                // Desglose por turno
+                if (turno === 'Matutino') {
+                    add(maps.sistemaMatutino,    fecha, sistema);
+                    add(maps.efectivoMatutino,   fecha, efectivo);
+                    add(maps.tarjetaMatutino,    fecha, tarjeta);
                 } else {
-                    chartData.set(corteFechaFormatted, totalSistema);
+                    add(maps.sistemaVespertino,  fecha, sistema);
+                    add(maps.efectivoVespertino, fecha, efectivo);
+                    add(maps.tarjetaVespertino,  fecha, tarjeta);
                 }
             });
 
-            const labels = Array.from(chartData.keys());
-            const data = Array.from(chartData.values());
-            const matutino = Array.from(matutinoData.values());
-            const vespertino = Array.from(vespertinoData.values());
+            const labels = Array.from(maps.sistema.keys());
 
-            const chartDataResult = {
-                labels: labels,
-                data: data,
-                matutino: matutino,
-                vespertino: vespertino,
-            };
-
-            res.status(HTTP.OK).json(chartDataResult);
+            res.status(HTTP.OK).json({
+                labels,
+                // Total Sistema
+                sistema:            Array.from(maps.sistema.values()),
+                sistemaMatutino:    Array.from(maps.sistemaMatutino.values()),
+                sistemaVespertino:  Array.from(maps.sistemaVespertino.values()),
+                // Total Efectivo
+                efectivo:           Array.from(maps.efectivo.values()),
+                efectivoMatutino:   Array.from(maps.efectivoMatutino.values()),
+                efectivoVespertino: Array.from(maps.efectivoVespertino.values()),
+                // Tarjeta
+                tarjeta:            Array.from(maps.tarjeta.values()),
+                tarjetaMatutino:    Array.from(maps.tarjetaMatutino.values()),
+                tarjetaVespertino:  Array.from(maps.tarjetaVespertino.values()),
+            });
         })
         .catch((error) => {
             console.error(error);
             res.status(HTTP.INTERNAL_SERVER_ERROR).json({ error: 'Error al obtener los datos para la gráfica' });
         });
+
     } catch (error) {
         return res.status(HTTP.BAD_REQUEST).json({ error: 'Formato de fecha inválido. Utiliza el formato YYYY-MM-DD' });
     }

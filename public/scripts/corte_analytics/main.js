@@ -9,8 +9,12 @@
 import { API } from './api.js';
 import { initLineChart, initPieChart, initBarChart, updateComparisonChart, switchLineMetric, LINE_METRICS } from './charts.js';
 import { getCurrentMonthRange, getDateFromWeek, getCurrentWeekString, formatCurrency } from './utils.js';
+import { getUserName } from '../app_selector/user.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
+
+    const userName = await getUserName();
+    document.getElementById('username').textContent = userName;
 
     // ── Fechas y estado ───────────────────────────────────────────────────
     const { start, end } = getCurrentMonthRange();

@@ -1,3 +1,5 @@
+import { getUserName } from '../app_selector/user.js';
+
 let allReadings = [];
 let selectedDeviceId = 'all';
 
@@ -177,6 +179,8 @@ document.getElementById('printReportBtn').addEventListener('click', function () 
 });
 
 document.addEventListener('DOMContentLoaded', async function () {
+  const userName = await getUserName();
+  document.getElementById('username').textContent = userName;
   await updateDeviceSelector();
   const year = parseInt(document.getElementById('year').value);
   const month = parseInt(document.getElementById('month').value);

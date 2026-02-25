@@ -25,6 +25,10 @@
   margin: 0;
 }
 
+.container-xxl {
+  max-width: 1755px!important;
+}
+
 
 /* =============================================================================
    2. FILTER BAR
@@ -140,7 +144,7 @@
 
 .summary-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
   gap: 16px;
 }
 
@@ -151,7 +155,7 @@
   gap: 16px;
   padding: 18px 20px;
   background: #fff;
-  border: 1px solid #d2d2d2;
+  border: 1px solid #e2e8f0;
   border-radius: 12px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, .05);
   transition: box-shadow .2s, transform .2s, border-color .2s;
@@ -208,9 +212,32 @@
 .summary-card__icon--efectivo { background: #0d6efd; }
 .summary-card__icon--tarjeta  { background: #ffc107; color: #1e293b !important; }
 .summary-card__icon--ticket   { background: #6c5ce7; }
+.summary-card__icon--dolares  { background: #16a34a; }
+
+.dolares-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: auto;
+  padding: 4px 10px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  color: #475569;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background .15s, color .15s;
+}
+
+.dolares-toggle:hover { background: #e2e8f0; color: #1e293b; }
+.dolares-toggle i { font-size: 0.65rem; }
 
 /* Cuerpo */
-.summary-card__body { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.summary-card__body { display: flex; flex-direction: column; gap: 1px; min-width: 0; flex: 1; }
 
 .summary-card__label {
   font-size: 0.7rem;
@@ -282,6 +309,11 @@
 /* =============================================================================
    5. RESPONSIVE
    ============================================================================= */
+
+@media (max-width: 768px) {
+  .summary-card__value  { font-size: 1.1rem; }
+  .summary-cards        { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+}
 
 @media (max-width: 600px) {
   .filter-bar__divider  { display: none; }

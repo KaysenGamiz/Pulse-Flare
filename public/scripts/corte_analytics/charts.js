@@ -38,6 +38,22 @@ export const LINE_METRICS = {
         matutino:   'tarjetaMatutino',
         vespertino: 'tarjetaVespertino',
     },
+    dolaresMXN: {
+        label:      'Dólares (MXN)',
+        icon:       'fa-dollar-sign',
+        iconClass:  'text-success',
+        total:      'dolaresMXN',
+        matutino:   'dolaresMXNMatutino',
+        vespertino: 'dolaresMXNVespertino',
+    },
+    dolaresUSD: {
+        label:      'Dólares (USD)',
+        icon:       'fa-dollar-sign',
+        iconClass:  'text-success',
+        total:      'dolaresUSD',
+        matutino:   'dolaresUSDMatutino',
+        vespertino: 'dolaresUSDVespertino',
+    },
 };
 
 // ─────────────────────────────────────────────────────────────────────────────

@@ -135,6 +135,12 @@ router.get('/chart-data', (req, res) => {
                 tarjeta:            new Map(),
                 tarjetaMatutino:    new Map(),
                 tarjetaVespertino:  new Map(),
+                dolaresMXN:         new Map(),
+                dolaresMXNMatutino: new Map(),
+                dolaresMXNVespertino: new Map(),
+                dolaresUSD:         new Map(),
+                dolaresUSDMatutino: new Map(),
+                dolaresUSDVespertino: new Map(),
             };
 
             const add = (map, key, value) =>
@@ -145,24 +151,33 @@ router.get('/chart-data', (req, res) => {
                 const hora   = moment.tz(corte.fechaHora, 'America/Los_Angeles').hour();
                 const turno  = hora < 18 ? 'Matutino' : 'Vespertino';
 
-                const sistema  = corte.totalSistema  || 0;
-                const efectivo = (corte.totalEfectivo || 0) + (corte.retiroEnEfectivo || 0);
-                const tarjeta  = corte.tarjeta        || 0;
+                const sistema   = corte.totalSistema  || 0;
+                const efectivo  = (corte.totalEfectivo || 0) + (corte.retiroEnEfectivo || 0);
+                const tarjeta   = corte.tarjeta        || 0;
+                const usd       = corte.dolares?.efectivo || 0;
+                const tc        = corte.dolares?.TC        || 0;
+                const mxn       = (usd > 0 && tc > 0) ? usd * tc : 0;
 
                 // Total diario
-                add(maps.sistema,   fecha, sistema);
-                add(maps.efectivo,  fecha, efectivo);
-                add(maps.tarjeta,   fecha, tarjeta);
+                add(maps.sistema,    fecha, sistema);
+                add(maps.efectivo,   fecha, efectivo);
+                add(maps.tarjeta,    fecha, tarjeta);
+                add(maps.dolaresUSD, fecha, usd);
+                add(maps.dolaresMXN, fecha, mxn);
 
                 // Desglose por turno
                 if (turno === 'Matutino') {
-                    add(maps.sistemaMatutino,    fecha, sistema);
-                    add(maps.efectivoMatutino,   fecha, efectivo);
-                    add(maps.tarjetaMatutino,    fecha, tarjeta);
+                    add(maps.sistemaMatutino,       fecha, sistema);
+                    add(maps.efectivoMatutino,      fecha, efectivo);
+                    add(maps.tarjetaMatutino,       fecha, tarjeta);
+                    add(maps.dolaresUSDMatutino,    fecha, usd);
+                    add(maps.dolaresMXNMatutino,    fecha, mxn);
                 } else {
-                    add(maps.sistemaVespertino,  fecha, sistema);
-                    add(maps.efectivoVespertino, fecha, efectivo);
-                    add(maps.tarjetaVespertino,  fecha, tarjeta);
+                    add(maps.sistemaVespertino,     fecha, sistema);
+                    add(maps.efectivoVespertino,    fecha, efectivo);
+                    add(maps.tarjetaVespertino,     fecha, tarjeta);
+                    add(maps.dolaresUSDVespertino,  fecha, usd);
+                    add(maps.dolaresMXNVespertino,  fecha, mxn);
                 }
             });
 
@@ -171,18 +186,21 @@ router.get('/chart-data', (req, res) => {
 
             res.status(HTTP.OK).json({
                 labels,
-                // Total Sistema
-                sistema:            align(maps.sistema),
-                sistemaMatutino:    align(maps.sistemaMatutino),
-                sistemaVespertino:  align(maps.sistemaVespertino),
-                // Total Efectivo
-                efectivo:           align(maps.efectivo),
-                efectivoMatutino:   align(maps.efectivoMatutino),
-                efectivoVespertino: align(maps.efectivoVespertino),
-                // Tarjeta
-                tarjeta:            align(maps.tarjeta),
-                tarjetaMatutino:    align(maps.tarjetaMatutino),
-                tarjetaVespertino:  align(maps.tarjetaVespertino),
+                sistema:             align(maps.sistema),
+                sistemaMatutino:     align(maps.sistemaMatutino),
+                sistemaVespertino:   align(maps.sistemaVespertino),
+                efectivo:            align(maps.efectivo),
+                efectivoMatutino:    align(maps.efectivoMatutino),
+                efectivoVespertino:  align(maps.efectivoVespertino),
+                tarjeta:             align(maps.tarjeta),
+                tarjetaMatutino:     align(maps.tarjetaMatutino),
+                tarjetaVespertino:   align(maps.tarjetaVespertino),
+                dolaresUSD:          align(maps.dolaresUSD),
+                dolaresUSDMatutino:  align(maps.dolaresUSDMatutino),
+                dolaresUSDVespertino:align(maps.dolaresUSDVespertino),
+                dolaresMXN:          align(maps.dolaresMXN),
+                dolaresMXNMatutino:  align(maps.dolaresMXNMatutino),
+                dolaresMXNVespertino:align(maps.dolaresMXNVespertino),
             });
         })
         .catch((error) => {
@@ -224,7 +242,7 @@ router.get('/range-summary', (req, res) => {
                     totalEfectivo: { $sum: { $add: ['$totalEfectivo', '$retiroEnEfectivo'] } },
                     tarjeta:       { $sum: '$tarjeta' },
                     totalCortes:   { $sum: 1 },          // conteo para ticket promedio
-                    // Pastel
+                    // Pastel + card dólares (MXN)
                     dolaresEfectivo: {
                         $sum: {
                             $cond: [
@@ -239,6 +257,16 @@ router.get('/range-summary', (req, res) => {
                             ]
                         }
                     },
+                    // Card dólares (USD puro — suma de billetes dólares recibidos)
+                    dolaresUSD: {
+                        $sum: {
+                            $cond: [
+                                { $ne: ['$dolares.efectivo', 0] },
+                                '$dolares.efectivo',
+                                0
+                            ]
+                        }
+                    },
                 }
             }
         ])
@@ -249,9 +277,9 @@ router.get('/range-summary', (req, res) => {
                 tarjeta:         0,
                 totalCortes:     0,
                 dolaresEfectivo: 0,
+                dolaresUSD:      0,
             };
 
-            // Ticket promedio = totalSistema / número de cortes
             const ticketPromedio = raw.totalCortes > 0
                 ? raw.totalSistema / raw.totalCortes
                 : 0;
@@ -261,7 +289,8 @@ router.get('/range-summary', (req, res) => {
                 totalEfectivo:   raw.totalEfectivo,
                 tarjeta:         raw.tarjeta,
                 ticketPromedio,
-                dolaresEfectivo: raw.dolaresEfectivo,
+                dolaresEfectivo: raw.dolaresEfectivo, // MXN
+                dolaresUSD:      raw.dolaresUSD,       // USD puro
             });
         })
         .catch((error) => {

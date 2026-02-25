@@ -43,7 +43,7 @@
 
   <!-- HEADER -->
   <div class="page-header">
-    <div class="container">
+    <div class="container-xxl">
       <div class="row align-items-center">
         <div class="col-md-8">
           <h1 class="page-title"><i class="fas fa-chart-line me-2"></i>HCorte Analytics</h1>
@@ -53,8 +53,8 @@
     </div>
   </div>
 
-  <div class="container">
-    <main class="row g-3">
+  <div class="container-xxl">
+    <main class="row g-2">
 
       <!-- ── FILTRO UNIFICADO ───────────────────────────────────────────── -->
       <div class="col-12">
@@ -91,13 +91,11 @@
         </div>
       </div>
 
-      <!-- ── CARDS DE RESUMEN ───────────────────────────────────────────────
-           data-metric vincula cada card con la métrica de la gráfica de líneas.
-           La card "ticket" no tiene métrica asociada (no aplica a la gráfica).
-      ─────────────────────────────────────────────────────────────────────── -->
+      <!-- ── CARDS DE RESUMEN ───────────────────────────────────────────── -->
       <div class="col-12">
         <div class="summary-cards">
 
+          <!-- Total Sistema -->
           <div class="summary-card summary-card--clickable summary-card--active" data-metric="sistema">
             <div class="summary-card__icon summary-card__icon--sistema">
               <i class="fas fa-chart-line"></i>
@@ -113,6 +111,7 @@
             <div class="summary-card__indicator"></div>
           </div>
 
+          <!-- Total Efectivo -->
           <div class="summary-card summary-card--clickable" data-metric="efectivo">
             <div class="summary-card__icon summary-card__icon--efectivo">
               <i class="fas fa-money-bill-wave"></i>
@@ -127,6 +126,26 @@
             <div class="summary-card__indicator"></div>
           </div>
 
+          <!-- Dólares — clicable + toggle USD/MXN -->
+          <div class="summary-card summary-card--clickable" id="dolaresCard">
+            <div class="summary-card__icon summary-card__icon--dolares">
+              <i class="fas fa-dollar-sign"></i>
+            </div>
+            <div class="summary-card__body">
+              <span class="summary-card__label">Dólares</span>
+              <div class="summary-card__value-row">
+                <span class="summary-card__value" id="summaryDolares">—</span>
+              </div>
+              <span class="summary-card__sub" id="summaryDolaresSub">Acumulado del período</span>
+            </div>
+            <button class="dolares-toggle" id="btnDolaresToggle" title="Alternar USD / MXN">
+              <span id="dolaresToggleLabel">USD</span>
+              <i class="fas fa-repeat"></i>
+            </button>
+            <div class="summary-card__indicator"></div>
+          </div>
+
+          <!-- Tarjeta -->
           <div class="summary-card summary-card--clickable" data-metric="tarjeta">
             <div class="summary-card__icon summary-card__icon--tarjeta">
               <i class="fas fa-credit-card"></i>
@@ -141,7 +160,7 @@
             <div class="summary-card__indicator"></div>
           </div>
 
-          <!-- Ticket promedio: sin data-metric, no filtra la gráfica -->
+          <!-- Ticket Promedio -->
           <div class="summary-card">
             <div class="summary-card__icon summary-card__icon--ticket">
               <i class="fas fa-receipt"></i>
@@ -185,6 +204,17 @@
                 <li>
                   <button class="dropdown-item metric-option" data-metric="tarjeta">
                     <i class="fas fa-credit-card me-2 text-warning"></i>Tarjeta
+                  </button>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                  <button class="dropdown-item metric-option" data-metric="dolaresMXN">
+                    <i class="fas fa-dollar-sign me-2 text-success"></i>Dólares (MXN)
+                  </button>
+                </li>
+                <li>
+                  <button class="dropdown-item metric-option" data-metric="dolaresUSD">
+                    <i class="fas fa-dollar-sign me-2 text-success"></i>Dólares (USD)
                   </button>
                 </li>
               </ul>

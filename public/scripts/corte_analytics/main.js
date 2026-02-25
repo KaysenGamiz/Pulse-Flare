@@ -3,6 +3,7 @@
  * - Un solo filtro de rango controla: cards, líneas, pastel y análisis GPT.
  * - Clicar una summary card filtra la gráfica de líneas.
  * - Card de dólares: clicable + toggle USD/MXN que cambia la métrica de la gráfica.
+ * - Filter bar con accesos rápidos de período y contador de días.
  */
 
 import { API } from './api.js';
@@ -15,11 +16,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const { start, end } = getCurrentMonthRange();
     let selectedWeeks = [];
     let currentMetric = 'sistema';
-
-    // Estado del toggle de dólares
-    let dolaresUSD  = 0;
-    let dolaresMXN  = 0;
-    let showingUSD  = true; // qué moneda muestra la card ahora
+    let dolaresUSD    = 0;
+    let dolaresMXN    = 0;
+    let showingUSD    = true;
 
     // ── Referencias al DOM ────────────────────────────────────────────────
     const lineStartInput    = document.getElementById('lineChartStartDate');
@@ -36,7 +35,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const metricDropdownLabel = document.getElementById('metricDropdownLabel');
     const metricDropdownIcon  = document.getElementById('metricDropdownIcon');
     const metricOptions       = document.querySelectorAll('.metric-option');
-    const clickableCards = document.querySelectorAll('.summary-card--clickable:not(#dolaresCard)');
+    const clickableCards      = document.querySelectorAll('.summary-card--clickable:not(#dolaresCard)');
 
     const btnDolaresToggle   = document.getElementById('btnDolaresToggle');
     const dolaresToggleLabel = document.getElementById('dolaresToggleLabel');
@@ -44,22 +43,71 @@ document.addEventListener('DOMContentLoaded', async () => {
     const summaryDolaresSub  = document.getElementById('summaryDolaresSub');
     const dolaresCard        = document.getElementById('dolaresCard');
 
+    const shortcutBtns    = document.querySelectorAll('.shortcut-btn');
+    const filterRangeDays = document.getElementById('filterRangeDays');
+
     // ── Valores iniciales ─────────────────────────────────────────────────
     lineStartInput.value = start;
     lineEndInput.value   = end;
     weekInput.value      = getCurrentWeekString();
+    updateDayCounter(start, end);
+    markActiveShortcut('month');
 
-    // ── Funciones ─────────────────────────────────────────────────────────
+    // ── Helpers de período ────────────────────────────────────────────────
 
-    async function loadRangeData(start, end) {
+    function updateDayCounter(s, e) {
+        if (!s || !e) { filterRangeDays.textContent = '— días'; return; }
+        const diff = Math.round((new Date(e) - new Date(s)) / 86400000) + 1;
+        filterRangeDays.textContent = `${diff} día${diff !== 1 ? 's' : ''}`;
+    }
+
+    function markActiveShortcut(key) {
+        shortcutBtns.forEach(b => b.classList.toggle('active', b.dataset.shortcut === key));
+    }
+
+    function clearActiveShortcut() {
+        shortcutBtns.forEach(b => b.classList.remove('active'));
+    }
+
+    function getShortcutRange(key) {
+        const now = new Date();
+        const pad = n => String(n).padStart(2, '0');
+        const fmt = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+
+        const monday = new Date(now);
+        monday.setDate(now.getDate() - ((now.getDay() + 6) % 7));
+        const sunday = new Date(monday);
+        sunday.setDate(monday.getDate() + 6);
+
+        const firstThisMonth  = new Date(now.getFullYear(), now.getMonth(), 1);
+        const lastThisMonth   = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+        const firstPrevMonth  = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        const lastPrevMonth   = new Date(now.getFullYear(), now.getMonth(), 0);
+
+        const d7  = new Date(now); d7.setDate(now.getDate() - 6);
+        const d30 = new Date(now); d30.setDate(now.getDate() - 29);
+
+        return {
+            '7d':        { start: fmt(d7),            end: fmt(now) },
+            '30d':       { start: fmt(d30),            end: fmt(now) },
+            'week':      { start: fmt(monday),         end: fmt(sunday) },
+            'month':     { start: fmt(firstThisMonth), end: fmt(lastThisMonth) },
+            'prevMonth': { start: fmt(firstPrevMonth), end: fmt(lastPrevMonth) },
+        }[key];
+    }
+
+    // ── Funciones principales ─────────────────────────────────────────────
+
+    async function loadRangeData(s, e) {
         showCardsLoading();
+        updateDayCounter(s, e);
         const [summary] = await Promise.all([
-            API.getRangeSummary(start, end),
-            initLineChart(start, end, currentMetric)
+            API.getRangeSummary(s, e),
+            initLineChart(s, e, currentMetric)
         ]);
-        updateSummaryCards(summary, start, end);
+        updateSummaryCards(summary, s, e);
         initPieChart(summary);
-        loadAnalysis(summary, start, end);
+        loadAnalysis(summary, s, e);
     }
 
     function showCardsLoading() {
@@ -69,12 +117,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('summaryLoading').classList.remove('d-none');
     }
 
-    function updateSummaryCards(summary, start, end) {
+    function updateSummaryCards(summary, s, e) {
         document.getElementById('summaryTotalSistema').textContent   = formatCurrency(summary.totalSistema);
         document.getElementById('summaryTotalEfectivo').textContent  = formatCurrency(summary.totalEfectivo);
         document.getElementById('summaryTarjeta').textContent        = formatCurrency(summary.tarjeta);
         document.getElementById('summaryTicketPromedio').textContent = formatCurrency(summary.ticketPromedio);
-        document.getElementById('summaryRange').textContent          = `${start} · ${end}`;
+        document.getElementById('summaryRange').textContent          = `${s} · ${e}`;
         document.getElementById('summaryLoading').classList.add('d-none');
 
         dolaresUSD = summary.dolaresUSD      || 0;
@@ -82,10 +130,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         renderDolaresCard();
     }
 
-    /**
-     * Actualiza la card de dólares según la moneda activa (USD/MXN).
-     * Si la card de dólares está activa en la gráfica, también actualiza la métrica.
-     */
     function renderDolaresCard() {
         if (showingUSD) {
             summaryDolares.textContent     = `$${dolaresUSD.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD`;
@@ -97,32 +141,27 @@ document.addEventListener('DOMContentLoaded', async () => {
             dolaresToggleLabel.textContent = 'USD';
         }
 
-        // Si la gráfica está mostrando dólares, actualizar también la métrica
         if (currentMetric === 'dolaresUSD' || currentMetric === 'dolaresMXN') {
             const newMetric = showingUSD ? 'dolaresUSD' : 'dolaresMXN';
-            // Actualizamos sin pasar por setActiveMetric para no redibujar el estado de cards
             currentMetric = newMetric;
             updateDropdownUI(newMetric);
             switchLineMetric(newMetric);
         }
     }
 
-    function loadAnalysis(summary, start, end) {
+    function loadAnalysis(summary, s, e) {
         analysisContainer.innerHTML = '<div class="spinner-border text-primary" role="status"></div> Analizando datos...';
         API.postForAnalysis({
             Dolares:   summary.dolaresEfectivo,
             Efectivo:  summary.totalEfectivo,
             Tarjeta:   summary.tarjeta,
-            DateStart: start,
-            DateEnd:   end
+            DateStart: s,
+            DateEnd:   e
         })
         .then(result  => { analysisContainer.innerHTML = result.analysis; })
         .catch(() => { analysisContainer.innerHTML = '<span class="text-danger">Error al cargar el análisis.</span>'; });
     }
 
-    /**
-     * Solo actualiza el label/ícono del dropdown, sin tocar el estado de las cards.
-     */
     function updateDropdownUI(metric) {
         const m = LINE_METRICS[metric];
         if (!m) return;
@@ -131,25 +170,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         metricOptions.forEach(b => b.classList.toggle('active', b.dataset.metric === metric));
     }
 
-    /**
-     * Punto central de cambio de métrica.
-     * Actualiza gráfica, dropdown y estado activo de cards.
-     */
     function setActiveMetric(metric) {
         currentMetric = metric;
         updateDropdownUI(metric);
 
         const isDolares = metric === 'dolaresUSD' || metric === 'dolaresMXN';
-
-        // Cards con data-metric
         clickableCards.forEach(card => {
             card.classList.toggle('summary-card--active', card.dataset.metric === metric);
         });
-
-        // Card de dólares — se maneja por id porque su métrica es dinámica
         dolaresCard.classList.toggle('summary-card--active', isDolares);
 
-        // Si se activa desde el dropdown con dólares, sincronizar el toggle
         if (metric === 'dolaresUSD') showingUSD = true;
         if (metric === 'dolaresMXN') showingUSD = false;
         if (isDolares) renderDolaresCard();
@@ -165,38 +195,58 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // ── Eventos ───────────────────────────────────────────────────────────
 
+    // Accesos rápidos — aplican el rango sin necesidad de "Aplicar"
+    shortcutBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const range = getShortcutRange(btn.dataset.shortcut);
+            if (!range) return;
+            lineStartInput.value = range.start;
+            lineEndInput.value   = range.end;
+            markActiveShortcut(btn.dataset.shortcut);
+            loadRangeData(range.start, range.end);
+        });
+    });
+
+    // Al cambiar manualmente las fechas, quitar el shortcut activo
+    lineStartInput.addEventListener('change', () => {
+        clearActiveShortcut();
+        updateDayCounter(lineStartInput.value, lineEndInput.value);
+    });
+    lineEndInput.addEventListener('change', () => {
+        clearActiveShortcut();
+        updateDayCounter(lineStartInput.value, lineEndInput.value);
+    });
+
     btnLineFilter.addEventListener('click', () => {
         const s = lineStartInput.value;
         const e = lineEndInput.value;
         if (!s || !e) return alert('Por favor selecciona ambas fechas.');
+        clearActiveShortcut();
         loadRangeData(s, e);
     });
 
     btnResetFilter.addEventListener('click', () => {
         lineStartInput.value = start;
         lineEndInput.value   = end;
+        markActiveShortcut('month');
         loadRangeData(start, end);
     });
 
-    // Toggle USD/MXN — cambia la card Y la gráfica si está activa
     btnDolaresToggle.addEventListener('click', (e) => {
         e.stopPropagation();
         showingUSD = !showingUSD;
         renderDolaresCard();
     });
 
-    // Clic en la card de dólares — activa la métrica según el toggle actual
     dolaresCard.addEventListener('click', () => {
         const metric = showingUSD ? 'dolaresUSD' : 'dolaresMXN';
         setActiveMetric(metric);
     });
 
-    // Cards clicables normales
     clickableCards.forEach(card => {
         card.addEventListener('click', () => setActiveMetric(card.dataset.metric));
     });
 
-    // Dropdown
     metricOptions.forEach(btn => {
         btn.addEventListener('click', () => setActiveMetric(btn.dataset.metric));
     });

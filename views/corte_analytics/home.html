@@ -69,15 +69,31 @@
               <label for="lineChartStartDate">Inicio</label>
               <input type="date" id="lineChartStartDate" class="filter-input"/>
             </div>
-            <div class="filter-bar__arrow">
-              <i class="fas fa-arrow-right"></i>
-            </div>
+            <i class="fas fa-arrow-right filter-bar__arrow"></i>
             <div class="filter-field">
               <label for="lineChartEndDate">Fin</label>
               <input type="date" id="lineChartEndDate" class="filter-input"/>
             </div>
           </div>
           <div class="filter-bar__divider"></div>
+
+          <!-- Accesos rápidos -->
+          <div class="filter-bar__shortcuts">
+            <button class="shortcut-btn" data-shortcut="7d">Últimos 7 días</button>
+            <button class="shortcut-btn" data-shortcut="30d">Últimos 30 días</button>
+            <button class="shortcut-btn" data-shortcut="week">Esta semana</button>
+            <button class="shortcut-btn" data-shortcut="month">Este mes</button>
+            <button class="shortcut-btn" data-shortcut="prevMonth">Mes anterior</button>
+          </div>
+
+          <div class="filter-bar__divider"></div>
+
+          <!-- Contador de días -->
+          <div class="filter-bar__range-info">
+            <i class="fas fa-calendar-week"></i>
+            <span id="filterRangeDays">— días</span>
+          </div>
+
           <div class="filter-bar__actions">
             <button class="filter-btn filter-btn--apply" id="btnLineFilter">
               <i class="fas fa-filter"></i>
